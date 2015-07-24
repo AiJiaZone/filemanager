@@ -46,8 +46,9 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="File name.mp4"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="@string/folder"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/tvFileDetails"
@@ -58,6 +59,6 @@
         android:layout_toRightOf="@+id/imgFileIcon"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="Size: 48mb" />
+        android:text="@string/mime_type_s" />
 
 </RelativeLayout>
