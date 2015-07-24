@@ -19,13 +19,13 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.michaldabski.filemanager"
+    package="com.android.filemanager"
     android:versionCode="7"
     android:versionName="0.5">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -35,14 +35,14 @@
     <uses-permission android:name="android.permission.NFC" />
 
     <application
-        android:name="com.michaldabski.filemanager.FileManagerApplication"
+        android:name="com.android.filemanager.FileManagerApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:logo="@drawable/folder_logo"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.michaldabski.filemanager.folders.FolderActivity"
+            android:name="com.android.filemanager.folders.FolderActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTranslucentTheme">
             <intent-filter>
@@ -52,12 +52,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.michaldabski.filemanager.about.AboutActivity"
+            android:name="com.android.filemanager.about.AboutActivity"
             android:label="@string/title_activity_about"
             android:logo="@drawable/ic_about">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.michaldabski.filemanager.folders.FolderActivity" />
+                android:value="com.android.filemanager.folders.FolderActivity" />
         </activity>
     </application>
 
