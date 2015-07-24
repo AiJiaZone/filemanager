@@ -61,6 +61,7 @@ import android.widget.Toast;
 
 import com.android.filemanager.AppPreferences;
 import com.android.filemanager.FileManagerApplication;
+import com.android.filemanager.R;
 import com.android.filemanager.clipboard.Clipboard;
 import com.android.filemanager.clipboard.FileOperationListener;
 import com.android.filemanager.favourites.FavouriteFolder;
@@ -68,10 +69,10 @@ import com.android.filemanager.favourites.FavouritesManager;
 import com.android.utils.AsyncResult;
 import com.android.utils.FilePreviewCache;
 import com.android.utils.FileUtils;
+import com.android.utils.FontApplicator;
 import com.android.utils.IntentUtils;
 import com.android.utils.ListViewUtils;
 import com.android.utils.OnResultListener;
-import com.android.utils.FontApplicator;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
             listView.setAdapter(fileAdapter);
             listView.setSelection(topVisibleItem);
 
-            getView().findViewById(com.android.filemanager.R.id.layoutMessage).setVisibility(View.GONE);
+            getView().findViewById(R.id.layoutMessage).setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
         }
     }
@@ -126,8 +127,8 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     void showProgress() {
         if (getView() != null) {
             getListView().setVisibility(View.GONE);
-            getView().findViewById(com.android.filemanager.R.id.layoutMessage).setVisibility(View.VISIBLE);
-            getView().findViewById(com.android.filemanager.R.id.tvMessage).setVisibility(View.GONE);
+            getView().findViewById(R.id.layoutMessage).setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.tvMessage).setVisibility(View.GONE);
         }
     }
 
@@ -170,9 +171,9 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         View view = getView();
         if (view != null) {
             getListView().setVisibility(View.GONE);
-            view.findViewById(com.android.filemanager.R.id.layoutMessage).setVisibility(View.VISIBLE);
-            view.findViewById(com.android.filemanager.R.id.progress).setVisibility(View.GONE);
-            TextView tvMessage = (TextView) view.findViewById(com.android.filemanager.R.id.tvMessage);
+            view.findViewById(R.id.layoutMessage).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.progress).setVisibility(View.GONE);
+            TextView tvMessage = (TextView) view.findViewById(R.id.tvMessage);
             tvMessage.setText(message);
 
         }
@@ -184,13 +185,13 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
 
     void showList() {
         getListView().setVisibility(View.VISIBLE);
-        getView().findViewById(com.android.filemanager.R.id.layoutMessage).setVisibility(View.GONE);
+        getView().findViewById(R.id.layoutMessage).setVisibility(View.GONE);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(com.android.filemanager.R.layout.fragment_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
         this.listView = (AbsListView) view.findViewById(android.R.id.list);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
@@ -217,7 +218,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 try {
                     File[] files = params[0].listFiles(FileUtils.DEFAULT_FILE_FILTER);
                     if (files == null)
-                        throw new NullPointerException(getString(com.android.filemanager.R.string.cannot_read_directory_s, params[0].getName()));
+                        throw new NullPointerException(getString(R.string.cannot_read_directory_s, params[0].getName()));
                     if (isCancelled())
                         throw new Exception("Task cancelled");
                     Arrays.sort(files, getPreferences().getFileSortingComparator());
@@ -242,7 +243,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                     files = Arrays.asList(result.getResult());
 
                     if (files.isEmpty()) {
-                        showMessage(com.android.filemanager.R.string.folder_empty);
+                        showMessage(R.string.folder_empty);
                         return;
                     }
                     adapter = new FileAdapter(getActivity(), files, getApplication().getFileIconResolver());
@@ -271,28 +272,28 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(com.android.filemanager.R.menu.folder_browser, menu);
+        inflater.inflate(R.menu.folder_browser, menu);
 
-        menu.findItem(com.android.filemanager.R.id.menu_selectAll).setVisible(!(files == null || files.isEmpty()));
+        menu.findItem(R.id.menu_selectAll).setVisible(!(files == null || files.isEmpty()));
 
         if (getApplication().getFavouritesManager().isFolderFavourite(currentDir)) {
-            menu.findItem(com.android.filemanager.R.id.menu_unfavourite).setVisible(true);
-            menu.findItem(com.android.filemanager.R.id.menu_favourite).setVisible(false);
+            menu.findItem(R.id.menu_unfavourite).setVisible(true);
+            menu.findItem(R.id.menu_favourite).setVisible(false);
         } else {
-            menu.findItem(com.android.filemanager.R.id.menu_unfavourite).setVisible(false);
-            menu.findItem(com.android.filemanager.R.id.menu_favourite).setVisible(true);
+            menu.findItem(R.id.menu_unfavourite).setVisible(false);
+            menu.findItem(R.id.menu_favourite).setVisible(true);
         }
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.findItem(com.android.filemanager.R.id.menu_paste).setVisible(Clipboard.getInstance().isEmpty() == false);
-        menu.findItem(com.android.filemanager.R.id.menu_navigate_up).setVisible(currentDir.getParentFile() != null);
+        menu.findItem(R.id.menu_paste).setVisible(Clipboard.getInstance().isEmpty() == false);
+        menu.findItem(R.id.menu_navigate_up).setVisible(currentDir.getParentFile() != null);
     }
 
     void showEditTextDialog(int title, int okButtonText, final OnResultListener<CharSequence> enteredTextResult, CharSequence hint, CharSequence defaultValue) {
-        View view = getActivity().getLayoutInflater().inflate(com.android.filemanager.R.layout.dialog_edittext, (ViewGroup) getActivity().getWindow().getDecorView(), false);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_edittext, (ViewGroup) getActivity().getWindow().getDecorView(), false);
         final EditText editText = (EditText) view.findViewById(android.R.id.edit);
         editText.setHint(hint);
         editText.setText(defaultValue);
@@ -322,11 +323,11 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case com.android.filemanager.R.id.menu_selectAll:
+            case R.id.menu_selectAll:
                 selectFiles(this.files);
                 return true;
 
-            case com.android.filemanager.R.id.menu_navigate_up:
+            case R.id.menu_navigate_up:
                 String newFolder = currentDir.getParent();
                 if (newFolder != null) {
                     Bundle args = new Bundle(1);
@@ -339,7 +340,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 }
                 return true;
 
-            case com.android.filemanager.R.id.menu_favourite:
+            case R.id.menu_favourite:
                 try {
                     final String directoryName = FileUtils.getFolderDisplayName(currentDir);
 
@@ -351,14 +352,14 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 }
                 return true;
 
-            case com.android.filemanager.R.id.menu_unfavourite:
+            case R.id.menu_unfavourite:
                 FavouritesManager favouritesManager = getApplication().getFavouritesManager();
                 favouritesManager.removeFavourite(currentDir);
                 getActivity().invalidateOptionsMenu();
                 return true;
 
-            case com.android.filemanager.R.id.menu_create_folder:
-                showEditTextDialog(com.android.filemanager.R.string.create_folder, com.android.filemanager.R.string.create, new OnResultListener<CharSequence>() {
+            case R.id.menu_create_folder:
+                showEditTextDialog(R.string.create_folder, R.string.create, new OnResultListener<CharSequence>() {
 
                     @Override
                     public void onResult(AsyncResult<CharSequence> result) {
@@ -367,10 +368,10 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                             File newFolder = new File(currentDir, name);
                             if (newFolder.mkdirs()) {
                                 refreshFolder();
-                                Toast.makeText(getActivity(), com.android.filemanager.R.string.folder_created_successfully, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.folder_created_successfully, Toast.LENGTH_SHORT).show();
                                 navigateTo(newFolder);
                             } else
-                                Toast.makeText(getActivity(), com.android.filemanager.R.string.folder_could_not_be_created, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.folder_could_not_be_created, Toast.LENGTH_SHORT).show();
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -380,11 +381,11 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 }, "", "");
                 return true;
 
-            case com.android.filemanager.R.id.menu_paste:
+            case R.id.menu_paste:
                 pasteFiles();
                 return true;
 
-            case com.android.filemanager.R.id.menu_refresh:
+            case R.id.menu_refresh:
                 refreshFolder();
                 return true;
         }
@@ -400,7 +401,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
             protected void onPreExecute() {
                 super.onPreExecute();
                 progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setTitle(getActivity().getString(com.android.filemanager.R.string.pasting_files_));
+                progressDialog.setTitle(getActivity().getString(R.string.pasting_files_));
                 progressDialog.setIndeterminate(false);
                 progressDialog.setCancelable(false);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -450,7 +451,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 refreshFolder();
                 if (result == null) {
                     Clipboard.getInstance().clear();
-                    Toast.makeText(getActivity(), com.android.filemanager.R.string.files_pasted, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.files_pasted, Toast.LENGTH_SHORT).show();
                 } else {
                     new AlertDialog.Builder(getActivity())
                             .setMessage(result.getMessage())
@@ -537,11 +538,11 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            startActivity(Intent.createChooser(intent, getString(com.android.filemanager.R.string.open_file_with_, file.getName())));
+            startActivity(Intent.createChooser(intent, getString(R.string.open_file_with_, file.getName())));
         } catch (Exception e) {
             new AlertDialog.Builder(getActivity())
                     .setMessage(e.getMessage())
-                    .setTitle(com.android.filemanager.R.string.error)
+                    .setTitle(R.string.error)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
         }
@@ -605,12 +606,12 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         final CharSequence title;
         final StringBuilder message = new StringBuilder();
         if (files.size() == 1) title = ((File) files.toArray()[0]).getName();
-        else title = getString(com.android.filemanager.R.string._d_objects, files.size());
+        else title = getString(R.string._d_objects, files.size());
 
         if (files.size() > 1)
             message.append(FileUtils.combineFileNames(files)).append("\n\n");
-        message.append(getString(com.android.filemanager.R.string.size_s, FileUtils.formatFileSize(files))).append('\n');
-        message.append(getString(com.android.filemanager.R.string.mime_type_s, FileUtils.getCollectiveMimeType(files)));
+        message.append(getString(R.string.size_s, FileUtils.formatFileSize(files))).append('\n');
+        message.append(getString(R.string.mime_type_s, FileUtils.getCollectiveMimeType(files)));
 
         new AlertDialog.Builder(getActivity())
                 .setTitle(title)
@@ -622,15 +623,15 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
-            case com.android.filemanager.R.id.action_delete:
+            case R.id.action_delete:
                 new AlertDialog.Builder(getActivity())
-                        .setMessage(getString(com.android.filemanager.R.string.delete_d_items_, selectedFiles.size()))
-                        .setPositiveButton(com.android.filemanager.R.string.delete, new OnClickListener() {
+                        .setMessage(getString(R.string.delete_d_items_, selectedFiles.size()))
+                        .setPositiveButton(R.string.delete, new OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 int n = FileUtils.deleteFiles(selectedFiles);
-                                Toast.makeText(getActivity(), getString(com.android.filemanager.R.string._d_files_deleted, n), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string._d_files_deleted, n), Toast.LENGTH_SHORT).show();
                                 refreshFolder();
                                 finishActionMode(false);
                             }
@@ -639,32 +640,32 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                         .show();
                 return true;
 
-            case com.android.filemanager.R.id.action_selectAll:
+            case R.id.action_selectAll:
                 if (isEverythingSelected()) clearFileSelection();
                 else selectFiles(files);
                 return true;
 
-            case com.android.filemanager.R.id.action_info:
+            case R.id.action_info:
                 if (selectedFiles.isEmpty()) return true;
                 showFileInfo(selectedFiles);
                 return true;
 
-            case com.android.filemanager.R.id.action_copy:
+            case R.id.action_copy:
                 Clipboard.getInstance().addFiles(selectedFiles, Clipboard.FileAction.Copy);
-                Toast.makeText(getActivity(), com.android.filemanager.R.string.objects_copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.objects_copied_to_clipboard, Toast.LENGTH_SHORT).show();
                 finishActionMode(false);
                 return true;
 
-            case com.android.filemanager.R.id.action_cut:
+            case R.id.action_cut:
                 Clipboard clipboard = Clipboard.getInstance();
                 clipboard.addFiles(selectedFiles, Clipboard.FileAction.Cut);
-                Toast.makeText(getActivity(), com.android.filemanager.R.string.objects_cut_to_clipboard, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.objects_cut_to_clipboard, Toast.LENGTH_SHORT).show();
                 finishActionMode(false);
                 return true;
 
-            case com.android.filemanager.R.id.action_rename:
+            case R.id.action_rename:
                 final File fileToRename = (File) selectedFiles.toArray()[0];
-                showEditTextDialog(fileToRename.isDirectory() ? com.android.filemanager.R.string.rename_folder : com.android.filemanager.R.string.rename_file, com.android.filemanager.R.string.rename, new OnResultListener<CharSequence>() {
+                showEditTextDialog(fileToRename.isDirectory() ? R.string.rename_folder : R.string.rename_file, R.string.rename, new OnResultListener<CharSequence>() {
 
                     @Override
                     public void onResult(AsyncResult<CharSequence> result) {
@@ -673,9 +674,9 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                             if (fileToRename.renameTo(new File(fileToRename.getParentFile(), newName))) {
                                 finishActionMode(false);
                                 refreshFolder();
-                                Toast.makeText(getActivity(), com.android.filemanager.R.string.file_renamed, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.file_renamed, Toast.LENGTH_SHORT).show();
                             } else
-                                Toast.makeText(getActivity(), getActivity().getString(com.android.filemanager.R.string.file_could_not_be_renamed_to_s, newName), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getActivity().getString(R.string.file_could_not_be_renamed_to_s, newName), Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -685,11 +686,11 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 }, fileToRename.getName(), fileToRename.getName());
                 return true;
 
-            case com.android.filemanager.R.id.menu_add_homescreen_icon:
+            case R.id.menu_add_homescreen_icon:
 
                 for (File file : selectedFiles)
                     IntentUtils.createShortcut(getActivity(), file);
-                Toast.makeText(getActivity(), com.android.filemanager.R.string.shortcut_created, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.shortcut_created, Toast.LENGTH_SHORT).show();
                 actionMode.finish();
                 return true;
         }
@@ -705,7 +706,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         if (actionMode != null) {
             actionMode.invalidate();
             int count = selectedFiles.size();
-            actionMode.setTitle(getString(com.android.filemanager.R.string._d_objects, count));
+            actionMode.setTitle(getString(R.string._d_objects, count));
 
             actionMode.setSubtitle(FileUtils.combineFileNames(selectedFiles));
 
@@ -737,10 +738,10 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         setActionbarVisibility(true);
-        getActivity().getMenuInflater().inflate(com.android.filemanager.R.menu.action_file, menu);
-        getActivity().getMenuInflater().inflate(com.android.filemanager.R.menu.action_file_single, menu);
+        getActivity().getMenuInflater().inflate(R.menu.action_file, menu);
+        getActivity().getMenuInflater().inflate(R.menu.action_file_single, menu);
 
-        MenuItem shareMenuItem = menu.findItem(com.android.filemanager.R.id.action_share);
+        MenuItem shareMenuItem = menu.findItem(R.id.action_share);
         shareActionProvider = (ShareActionProvider) shareMenuItem.getActionProvider();
         this.preserveSelection = false;
         return true;
@@ -771,11 +772,11 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         int count = selectedFiles.size();
         if (count == 1) {
-            menu.findItem(com.android.filemanager.R.id.action_rename).setVisible(true);
-            menu.findItem(com.android.filemanager.R.id.menu_add_homescreen_icon).setTitle(com.android.filemanager.R.string.add_to_homescreen);
+            menu.findItem(R.id.action_rename).setVisible(true);
+            menu.findItem(R.id.menu_add_homescreen_icon).setTitle(R.string.add_to_homescreen);
         } else {
-            menu.findItem(com.android.filemanager.R.id.action_rename).setVisible(false);
-            menu.findItem(com.android.filemanager.R.id.menu_add_homescreen_icon).setTitle(com.android.filemanager.R.string.add_to_homescreen_multiple);
+            menu.findItem(R.id.action_rename).setVisible(false);
+            menu.findItem(R.id.menu_add_homescreen_icon).setTitle(R.string.add_to_homescreen_multiple);
         }
 
         // show Share button if no folder was selected
@@ -787,7 +788,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                     break;
                 }
         }
-        menu.findItem(com.android.filemanager.R.id.action_share).setVisible(allowShare);
+        menu.findItem(R.id.action_share).setVisible(allowShare);
 
         return true;
     }

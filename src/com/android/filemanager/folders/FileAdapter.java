@@ -28,9 +28,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.android.utils.FileIconResolver;
 import com.android.filemanager.BaseFileAdapter;
 import com.android.filemanager.R;
+import com.android.utils.FileIconResolver;
 import com.android.utils.ViewHolder;
 
 import java.io.File;

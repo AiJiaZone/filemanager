@@ -30,8 +30,8 @@ import android.widget.TextView;
 
 /**
  * Applies selected font to the view and all views
- * @author Michal
  *
+ * @author Michal
  */
 public class FontApplicator {
     final private Typeface font;
@@ -50,6 +50,7 @@ public class FontApplicator {
 
     /**
      * Applies font to the view and/or its children
+     *
      * @param root
      * @return
      */

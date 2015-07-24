@@ -25,10 +25,10 @@ package com.android.utils;
 import android.view.View;
 import android.view.ViewGroup;
 
-/***
+/**
  * Traverse layout tree one view at a time
- * @author Michal
  *
+ * @author Michal
  */
 public class ViewTraverser {
     private final View root;

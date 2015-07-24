@@ -26,6 +26,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
+import com.android.filemanager.R;
 import com.android.filemanager.favourites.FavouriteFolder;
 import com.android.utils.FileUtils;
 import com.michaldabski.msqlite.MSQLiteOpenHelper;
@@ -53,13 +54,13 @@ public class SQLiteHelper extends MSQLiteOpenHelper {
         if (Environment.getExternalStorageDirectory().isDirectory()) {
             favouriteFolders.add(new FavouriteFolder(Environment.getExternalStorageDirectory(), FileUtils.DISPLAY_NAME_SD_CARD));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(com.android.filemanager.R.string.downloads)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.downloads)));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), getString(com.android.filemanager.R.string.music)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), getString(R.string.music)));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), getString(com.android.filemanager.R.string.photos)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), getString(R.string.photos)));
         } else
-            favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory("/"), getString(com.android.filemanager.R.string.root)));
+            favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory("/"), getString(R.string.root)));
 
         for (FavouriteFolder favouriteFolder : favouriteFolders) {
             if (favouriteFolder.exists())

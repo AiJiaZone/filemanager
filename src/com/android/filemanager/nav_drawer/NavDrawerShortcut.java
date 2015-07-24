@@ -27,8 +27,8 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.android.filemanager.folders.FolderActivity;
-import com.android.utils.FileUtils;
 import com.android.filemanager.folders.FolderFragment;
+import com.android.utils.FileUtils;
 
 import java.io.File;
 

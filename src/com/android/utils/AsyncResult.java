@@ -37,6 +37,7 @@ public class AsyncResult<T> {
 
     /**
      * Returns result fetched asynchronously, throws exception if exception present.
+     *
      * @return
      * @throws Exception
      */

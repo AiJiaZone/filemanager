@@ -36,6 +36,7 @@ public class FavouritesManager {
     private final List<FavouriteFolder> folders;
     private final SQLiteHelper sqLiteHelper;
     private final Set<FavouritesListener> favouritesListeners;
+
     public FavouritesManager(Context context) {
         this.sqLiteHelper = new SQLiteHelper(context);
         this.favouritesListeners = new HashSet<FavouritesManager.FavouritesListener>();

@@ -44,6 +44,7 @@ public class Clipboard {
     private static Clipboard instance = null;
     final Set<ClipboardListener> clipboardListeners;
     private final Map<File, FileAction> files;
+
     private Clipboard() {
         this.files = new HashMap<File, Clipboard.FileAction>();
         this.clipboardListeners = new HashSet<ClipboardListener>(1);
@@ -124,7 +125,7 @@ public class Clipboard {
         pasteFile(file, destinaton, files.get(file), operationListener);
 
 /*		this.files.remove(file);
-		for (ClipboardListener listener : clipboardListeners)
+        for (ClipboardListener listener : clipboardListeners)
 			listener.onClipboardContentsChange(this);*/
     }
 

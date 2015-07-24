@@ -32,6 +32,7 @@ public class FilePreviewCache extends LruCache<File, Bitmap> {
 
     /**
      * create new cache
+     *
      * @param maxSize max size in bytes
      */
     public FilePreviewCache(int maxSize) {

@@ -26,9 +26,9 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import com.android.filemanager.R;
 import com.android.utils.FilePreviewCache;
 import com.android.utils.FileUtils;
-import com.android.filemanager.R;
 
 import java.io.File;
 

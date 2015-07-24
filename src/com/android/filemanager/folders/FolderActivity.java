@@ -44,17 +44,17 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.android.filemanager.about.AboutActivity;
-import com.android.filemanager.nav_drawer.NavDrawerAdapter;
-import com.android.utils.ListViewUtils;
 import com.android.filemanager.FileManagerApplication;
 import com.android.filemanager.R;
+import com.android.filemanager.about.AboutActivity;
 import com.android.filemanager.clipboard.Clipboard;
 import com.android.filemanager.clipboard.Clipboard.ClipboardListener;
 import com.android.filemanager.clipboard.ClipboardFileAdapter;
 import com.android.filemanager.favourites.FavouritesManager;
 import com.android.filemanager.favourites.FavouritesManager.FavouritesListener;
+import com.android.filemanager.nav_drawer.NavDrawerAdapter;
 import com.android.utils.FontApplicator;
+import com.android.utils.ListViewUtils;
 
 import java.io.File;
 import java.util.ArrayList;

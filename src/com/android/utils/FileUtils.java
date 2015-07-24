@@ -467,8 +467,8 @@ public class FileUtils {
     /**
      * Compares files by extension.
      * Falls back to sort by name if extensions are the same or one of the objects is a Directory
-     * @author Michal
      *
+     * @author Michal
      */
     public static class FileExtensionComparator extends FileNameComparator {
         @Override
