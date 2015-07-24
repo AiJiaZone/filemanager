@@ -18,31 +18,31 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/action_share"
+        android:actionProviderClass="android.widget.ShareActionProvider"
         android:orderInCategory="0"
         android:showAsAction="ifRoom"
         android:title="@string/share"
-        android:actionProviderClass="android.widget.ShareActionProvider"
-        android:visible="true"/>
-    
+        android:visible="true" />
+
     <item
         android:id="@+id/action_cut"
         android:icon="@drawable/ic_cut"
         android:orderInCategory="2"
         android:showAsAction="ifRoom"
         android:title="@string/cut"
-        android:visible="true"/>
-    
+        android:visible="true" />
+
     <item
         android:id="@+id/action_copy"
         android:icon="@drawable/ic_copy"
         android:orderInCategory="3"
         android:showAsAction="ifRoom"
         android:title="@string/copy"
-        android:visible="true"/>
+        android:visible="true" />
 
     <item
         android:id="@+id/action_delete"
@@ -50,7 +50,7 @@
         android:orderInCategory="1"
         android:showAsAction="ifRoom"
         android:title="@string/delete"
-        android:visible="true"/>
+        android:visible="true" />
 
     <item
         android:id="@+id/action_selectAll"
@@ -58,13 +58,13 @@
         android:orderInCategory="5"
         android:showAsAction="ifRoom"
         android:title="@string/select_all"
-        android:visible="true"/>
-    
+        android:visible="true" />
+
     <item
         android:id="@+id/action_info"
+        android:icon="@drawable/ic_about"
         android:orderInCategory="40"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_about"
-        android:title="@string/file_info"/>
+        android:title="@string/file_info" />
 
 </menu>

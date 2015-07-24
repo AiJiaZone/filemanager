@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2014 Michal Dabski
   
   Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,17 +23,16 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent" >
+    android:background="@android:color/transparent">
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".FolderActivity" />
 
     <include layout="@layout/layout_nav_drawer" />
-    
+
     <include layout="@layout/layout_clipboard_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

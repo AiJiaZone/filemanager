@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2014 Michal Dabski
   
   Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,16 +18,16 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<ListView xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/listClipboard"
     android:layout_width="@dimen/clipboard_drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="end"
     android:background="#fff"
     android:choiceMode="singleChoice"
+    android:clipToPadding="false"
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:visibility="visible"
-    android:clipToPadding="false"
     tools:listitem="@layout/list_item_file" />
