@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright (c) 2014 Michal Dabski
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of
+  this software and associated documentation files (the "Software"), to deal in
+  the Software without restriction, including without limitation the rights to
+  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+  the Software, and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+  FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<resources>
+
+    <string name="app_name">文件夹</string>
+    <string name="title_activity_about">关于</string>
+    <string name="cannot_read_directory_s">无法读取 %s</string>
+    <string name="open_file_with_">用 %s 打开:</string>
+    <string name="size_s">大小: %s</string>
+    <string name="folder">%d 个文件</string>
+    <string name="open_drawer">打开抽屉</string>
+    <string name="close_drawer">关闭抽屉</string>
+    <string name="remove_favourite">删除收藏</string>
+    <string name="folder_empty">空文件夹</string>
+    <string name="delete">删除</string>
+    <string name="_d_objects">%d 个文件</string>
+    <string name="delete_d_items_">删除 %d 个文件?</string>
+    <string name="select_all">选择所有</string>
+    <string name="rename">重命名</string>
+    <string name="share">分享</string>
+    <string name="_d_files_deleted">%d 个文件已删除</string>
+    <string name="add_to_homescreen">创建快捷方式</string>
+    <string name="add_to_homescreen_multiple">创建快捷方式</string>
+    <string name="shortcut_created">已添加到主屏幕</string>
+    <string name="root">根</string>
+    <string name="cut">剪切</string>
+    <string name="paste_here">粘贴到此处</string>
+    <string name="objects_cut_to_clipboard">剪切到粘贴板</string>
+    <string name="files_pasted">复制成功</string>
+    <string name="clipboard_is_empty">粘贴板为空</string>
+    <string name="refresh">更新</string>
+    <string name="copy">拷贝</string>
+    <string name="objects_copied_to_clipboard">复制到粘贴板</string>
+    <string name="create_folder">新建文件夹</string>
+    <string name="create">新建</string>
+    <string name="folder_created_successfully">文件夹创建成功</string>
+    <string name="loading_">正在加载...</string>
+    <string name="folder_could_not_be_created">无法创建文件夹</string>
+    <string name="pasting_files_">正在粘贴文件...</string>
+    <string name="downloads">下载</string>
+    <string name="music">音乐</string>
+    <string name="pictures">图片</string>
+    <string name="movies">电影</string>
+    <string name="dcim">相机</string>
+    <string name="credits">由 Michal Dabski www.michaldabski.com开发
+        \n
+        \n
+        内置图标 从 www.iconsdb.com获得</string>
+    <string name="app_icon">应用图标</string>
+    <string name="up">向上</string>
+    <string name="error">错误</string>
+    <string name="rename_file">重命名文件</string>
+    <string name="rename_folder">重命名文件夹</string>
+    <string name="file_renamed">重命名成功</string>
+    <string name="file_could_not_be_renamed_to_s">无法将文件重命名为 %s</string>
+    <string name="photos">照片</string>
+    <string name="add_favourite">添加收藏</string>
+    <string name="other_apps">其它应用</string>
+    <string name="feedback">反馈</string>
+    <string name="file_info">文件信息</string>
+    <string name="mime_type_s">MIME 类型: %s</string>
+
+</resources>
