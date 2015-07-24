@@ -41,7 +41,7 @@ import java.util.Set;
 
 public class FileAdapter extends BaseFileAdapter {
     Set<File> selectedFiles = null;
-    OnFileSelectedListener onFileSelectedListener = null;
+//    OnFileSelectedListener onFileSelectedListener = null;
 
     public FileAdapter(Context context, int layoutId, File[] files, FileIconResolver fileIconResolver) {
         super(context, layoutId, files, fileIconResolver);
@@ -65,7 +65,7 @@ public class FileAdapter extends BaseFileAdapter {
 
     public void setOnFileSelectedListener(
             OnFileSelectedListener onFileSelectedListener) {
-        this.onFileSelectedListener = onFileSelectedListener;
+//        this.onFileSelectedListener = onFileSelectedListener;
     }
 
     protected boolean isSelected(File file) {
@@ -90,6 +90,7 @@ public class FileAdapter extends BaseFileAdapter {
             view.setBackgroundResource(R.drawable.selector_list_item);
         }
 
+        /*
         if (onFileSelectedListener != null) {
             imgIcon.setBackgroundResource(R.drawable.selector_list_item);
             imgIcon.setOnClickListener(new OnClickListener() {
@@ -100,11 +101,12 @@ public class FileAdapter extends BaseFileAdapter {
                 }
             });
         }
+        */
 
         return view;
     }
 
-    public static interface OnFileSelectedListener {
+    public interface OnFileSelectedListener {
         void onFileSelected(File file);
     }
 
