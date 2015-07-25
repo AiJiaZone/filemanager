@@ -48,7 +48,7 @@
         android:singleLine="true"
         android:text="@string/folder"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"/>
+        />
 
     <TextView
         android:id="@+id/tvFileDetails"
