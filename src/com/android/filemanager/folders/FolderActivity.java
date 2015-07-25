@@ -158,7 +158,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
             }
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawerLayout.setFocusableInTouchMode(false);
 //		drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.END);
 

@@ -25,8 +25,8 @@ package com.android.filemanager.favourites;
 import android.content.Context;
 
 import com.android.filemanager.nav_drawer.NavDrawerShortcut;
-import com.michaldabski.msqlite.Annotations.ColumnName;
-import com.michaldabski.msqlite.Annotations.PrimaryKey;
+import com.android.sqlite.Annotations.ColumnName;
+import com.android.sqlite.Annotations.PrimaryKey;
 
 import java.io.File;
 

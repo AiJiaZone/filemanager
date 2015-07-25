@@ -29,7 +29,7 @@ import android.os.Environment;
 import com.android.filemanager.R;
 import com.android.filemanager.favourites.FavouriteFolder;
 import com.android.utils.FileUtils;
-import com.michaldabski.msqlite.MSQLiteOpenHelper;
+import com.android.sqlite.MSQLiteOpenHelper;
 
 import java.util.ArrayList;
 import java.util.List;
