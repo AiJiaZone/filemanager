@@ -22,7 +22,7 @@
 
     <string name="app_name">File Manager</string>
     <string name="title_activity_about">About</string>
-    <string name="cannot_read_directory_s">Cannot read directory %s</string>
+    <string name="cannot_read_directory">Cannot read directory %s</string>
     <string name="open_file_with_">Open %s with:</string>
     <string name="size_s">Size: %s</string>
     <string name="folder">%d items</string>
@@ -31,12 +31,12 @@
     <string name="remove_favourite">Remove favourite</string>
     <string name="folder_empty">Empty folder</string>
     <string name="delete">Delete</string>
-    <string name="_d_objects">%d objects</string>
+    <string name="multi_objects">%d objects</string>
     <string name="delete_d_items_">Delete %d items?</string>
     <string name="select_all">Select All</string>
     <string name="rename">Rename</string>
     <string name="share">Share</string>
-    <string name="_d_files_deleted">%d files deleted</string>
+    <string name="multi_files_deleted">%d files deleted</string>
     <string name="add_to_homescreen">Create shortcut</string>
     <string name="add_to_homescreen_multiple">Create shortcuts</string>
     <string name="shortcut_created">Shortcut added to homescreen</string>
@@ -77,5 +77,8 @@
     <string name="feedback">Feedback</string>
     <string name="file_info">File info</string>
     <string name="mime_type_s">MIME Type: %s</string>
+
+    <string name="list_view">List view</string>
+    <string name="grid_view">Grid view</string>
 
 </resources>

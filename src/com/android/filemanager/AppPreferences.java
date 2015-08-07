@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 
+import com.android.utils.FileManagerConstants;
 import com.android.utils.FileUtils;
 
 import java.io.File;
@@ -49,9 +50,9 @@ public class AppPreferences {
             PREF_SORT_BY = "sort_by";
     private final static int DEFAULT_SORT_BY = SORT_BY_NAME;
 
-    File startFolder;
-    int sortBy;
-    int cardLayout;
+    File mStartFolder = null;
+    int mSortBy = SORT_BY_NAME;
+    int mCardLayout = CARD_LAYOUT_MEDIA;
 
     private AppPreferences() {
     }
@@ -63,22 +64,29 @@ public class AppPreferences {
     }
 
     private void loadFromSharedPreferences(SharedPreferences sharedPreferences) {
-        String startPath = sharedPreferences.getString(PREF_START_FOLDER, null);
-        if (startPath == null) {
-            if (Environment.getExternalStorageDirectory().list() != null)
-                startFolder = Environment.getExternalStorageDirectory();
-            else
-                startFolder = new File("/");
-        } else this.startFolder = new File(startPath);
-        this.sortBy = sharedPreferences.getInt(PREF_SORT_BY, DEFAULT_SORT_BY);
-        this.cardLayout = sharedPreferences.getInt(PREF_CARD_LAYOUT, CARD_LAYOUT_MEDIA);
+        if (FileManagerConstants.DISABLE_SAVE_LASTFILE) {
+            mStartFolder = Environment.getExternalStorageDirectory();
+        } else {
+            String startPath = sharedPreferences.getString(PREF_START_FOLDER, null);
+            if (startPath == null) {
+                if (Environment.getExternalStorageDirectory().list() != null) {
+                    mStartFolder = Environment.getExternalStorageDirectory();
+                } else {
+                    mStartFolder = new File("/");
+                }
+            } else {
+                this.mStartFolder = new File(startPath);
+            }
+        }
+        this.mSortBy = sharedPreferences.getInt(PREF_SORT_BY, DEFAULT_SORT_BY);
+        this.mCardLayout = sharedPreferences.getInt(PREF_CARD_LAYOUT, CARD_LAYOUT_MEDIA);
     }
 
     private void saveToSharedPreferences(SharedPreferences sharedPreferences) {
         sharedPreferences.edit()
-                .putString(PREF_START_FOLDER, startFolder.getAbsolutePath())
-                .putInt(PREF_SORT_BY, sortBy)
-                .putInt(PREF_CARD_LAYOUT, cardLayout)
+                .putString(PREF_START_FOLDER, mStartFolder.getAbsolutePath())
+                .putInt(PREF_SORT_BY, mSortBy)
+                .putInt(PREF_CARD_LAYOUT, mCardLayout)
                 .apply();
     }
 
@@ -98,38 +106,38 @@ public class AppPreferences {
     }
 
     public int getCardLayout() {
-        return cardLayout;
+        return mCardLayout;
     }
 
     public void setCardLayout(int cardLayout) {
-        this.cardLayout = cardLayout;
+        this.mCardLayout = cardLayout;
     }
 
     public int getSortBy() {
-        return sortBy;
+        return mSortBy;
     }
 
     public AppPreferences setSortBy(int sortBy) {
         if (sortBy < 0 || sortBy > 2)
             throw new InvalidParameterException(String.valueOf(sortBy) + " is not a valid id of sorting order");
 
-        this.sortBy = sortBy;
+        this.mSortBy = sortBy;
         return this;
     }
 
-    public File getStartFolder() {
-        if (startFolder.exists() == false)
-            startFolder = new File("/");
-        return startFolder;
+    public File getmStartFolder() {
+        if (mStartFolder.exists() == false)
+            mStartFolder = new File("/");
+        return mStartFolder;
     }
 
-    public AppPreferences setStartFolder(File startFolder) {
-        this.startFolder = startFolder;
+    public AppPreferences setmStartFolder(File mStartFolder) {
+        this.mStartFolder = mStartFolder;
         return this;
     }
 
     public Comparator<File> getFileSortingComparator() {
-        switch (sortBy) {
+        switch (mSortBy) {
             case SORT_BY_SIZE:
                 return new FileUtils.FileSizeComparator();
 

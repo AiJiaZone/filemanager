@@ -22,7 +22,7 @@
 
     <string name="app_name">File Manager Pro</string>
     <string name="title_activity_about">O aplikaci</string>
-    <string name="cannot_read_directory_s">Nelze načíst adresář %s</string>
+    <string name="cannot_read_directory">Nelze načíst adresář %s</string>
     <string name="open_file_with_">Otevřít %s s:</string>
     <string name="size_s">Velikost: %s</string>
     <string name="folder">%d položek</string>
@@ -31,12 +31,12 @@
     <string name="remove_favourite">Odstranit z oblíbených</string>
     <string name="folder_empty">Prázdný adresář</string>
     <string name="delete">Smazat</string>
-    <string name="_d_objects">%d objektů</string>
+    <string name="multi_objects">%d objektů</string>
     <string name="delete_d_items_">Smazat %d položek?</string>
     <string name="select_all">Vybrat vše</string>
     <string name="rename">Přejmenovat</string>
     <string name="share">Sdílet</string>
-    <string name="_d_files_deleted">%d soubory smazány</string>
+    <string name="multi_files_deleted">%d soubory smazány</string>
     <string name="add_to_homescreen">Vytvořit odkaz</string>
     <string name="add_to_homescreen_multiple">Vytvořit odkazy</string>
     <string name="shortcut_created">Odkazy přidány na domovskou obrazovku</string>

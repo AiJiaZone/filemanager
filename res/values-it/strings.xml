@@ -22,7 +22,7 @@
 
     <string name="app_name">File Manager Pro</string>
     <string name="title_activity_about">Informazioni</string>
-    <string name="cannot_read_directory_s">Impossibile leggere la directory %s</string>
+    <string name="cannot_read_directory">Impossibile leggere la directory %s</string>
     <string name="open_file_with_">Apri %s con:</string>
     <string name="size_s">Dimensione: %s</string>
     <string name="folder">%d file</string>
@@ -31,12 +31,12 @@
     <string name="remove_favourite">Rimuovi preferito</string>
     <string name="folder_empty">Cartella vuota</string>
     <string name="delete">Elimina</string>
-    <string name="_d_objects">%d file</string>
+    <string name="multi_objects">%d file</string>
     <string name="delete_d_items_">Eliminare %d file?</string>
     <string name="select_all">Seleziona tutti</string>
     <string name="rename">Rinomina</string>
     <string name="share">Condividi</string>
-    <string name="_d_files_deleted">%d file eliminati</string>
+    <string name="multi_files_deleted">%d file eliminati</string>
     <string name="add_to_homescreen">Crea collegamento</string>
     <string name="add_to_homescreen_multiple">Crea collegamenti</string>
     <string name="shortcut_created">Collegamento aggiunto alla homescreen</string>

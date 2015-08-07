@@ -82,7 +82,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class FolderFragment extends Fragment implements OnItemClickListener, OnScrollListener, OnItemLongClickListener, MultiChoiceModeListener, FileAdapter.OnFileSelectedListener {
+public class FolderFragment extends Fragment implements
+        OnItemClickListener, OnScrollListener,
+        OnItemLongClickListener, MultiChoiceModeListener, FileAdapter.OnFileSelectedListener {
     public static final String
             EXTRA_DIR = "directory",
             EXTRA_SELECTED_FILES = "selected_files",
@@ -128,7 +130,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         if (getView() != null) {
             getListView().setVisibility(View.GONE);
             getView().findViewById(R.id.layoutMessage).setVisibility(View.VISIBLE);
-            getView().findViewById(R.id.tvMessage).setVisibility(View.GONE);
+            getView().findViewById(R.id.text_view).setVisibility(View.GONE);
         }
     }
 
@@ -160,7 +162,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         if (arguments != null && arguments.containsKey(EXTRA_DIR))
             currentDir = new File(arguments.getString(EXTRA_DIR));
         else
-            currentDir = getPreferences().getStartFolder();
+            currentDir = getPreferences().getmStartFolder();
 
         setHasOptionsMenu(true);
 
@@ -173,7 +175,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
             getListView().setVisibility(View.GONE);
             view.findViewById(R.id.layoutMessage).setVisibility(View.VISIBLE);
             view.findViewById(R.id.progress).setVisibility(View.GONE);
-            TextView tvMessage = (TextView) view.findViewById(R.id.tvMessage);
+            TextView tvMessage = (TextView) view.findViewById(R.id.text_view);
             tvMessage.setText(message);
 
         }
@@ -218,7 +220,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                 try {
                     File[] files = params[0].listFiles(FileUtils.DEFAULT_FILE_FILTER);
                     if (files == null)
-                        throw new NullPointerException(getString(R.string.cannot_read_directory_s, params[0].getName()));
+                        throw new NullPointerException(getString(R.string.cannot_read_directory, params[0].getName()));
                     if (isCancelled())
                         throw new Exception("Task cancelled");
                     Arrays.sort(files, getPreferences().getFileSortingComparator());
@@ -606,7 +608,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         final CharSequence title;
         final StringBuilder message = new StringBuilder();
         if (files.size() == 1) title = ((File) files.toArray()[0]).getName();
-        else title = getString(R.string._d_objects, files.size());
+        else title = getString(R.string.multi_objects, files.size());
 
         if (files.size() > 1)
             message.append(FileUtils.combineFileNames(files)).append("\n\n");
@@ -631,7 +633,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 int n = FileUtils.deleteFiles(selectedFiles);
-                                Toast.makeText(getActivity(), getString(R.string._d_files_deleted, n), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.multi_files_deleted, n), Toast.LENGTH_SHORT).show();
                                 refreshFolder();
                                 finishActionMode(false);
                             }
@@ -706,7 +708,7 @@ public class FolderFragment extends Fragment implements OnItemClickListener, OnS
         if (actionMode != null) {
             actionMode.invalidate();
             int count = selectedFiles.size();
-            actionMode.setTitle(getString(R.string._d_objects, count));
+            actionMode.setTitle(getString(R.string.multi_objects, count));
 
             actionMode.setSubtitle(FileUtils.combineFileNames(selectedFiles));
 

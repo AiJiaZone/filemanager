@@ -95,7 +95,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
     protected void onPause() {
         if (lastFolder != null) {
             FileManagerApplication application = (FileManagerApplication) getApplication();
-            application.getAppPreferences().setStartFolder(lastFolder).saveChanges(getApplicationContext());
+            application.getAppPreferences().setmStartFolder(lastFolder).saveChanges(getApplicationContext());
             Log.d(LOG_TAG, "Saved last folder " + lastFolder.toString());
         }
         super.onPause();
