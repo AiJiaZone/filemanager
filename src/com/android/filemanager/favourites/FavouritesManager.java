@@ -23,35 +23,41 @@
 package com.android.filemanager.favourites;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 import com.android.filemanager.sqlite.SQLiteHelper;
+import com.android.utils.FileUtils;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.android.filemanager.R;
 
 public class FavouritesManager {
-    private final List<FavouriteFolder> folders;
+    private final List<FavouriteFolder> mFolders;
     private final SQLiteHelper sqLiteHelper;
     private final Set<FavouritesListener> favouritesListeners;
+    private Context mContext = null;
 
     public FavouritesManager(Context context) {
         this.sqLiteHelper = new SQLiteHelper(context);
         this.favouritesListeners = new HashSet<FavouritesManager.FavouritesListener>();
-        this.folders = sqLiteHelper.selectAll(FavouriteFolder.class);
+        this.mFolders = sqLiteHelper.selectAll(FavouriteFolder.class);
+        mContext = context;
         sort();
         fixFavouritesOrder();
     }
 
     public void sort() {
-        Collections.sort(folders);
+        Collections.sort(mFolders);
     }
 
     private void fixFavouritesOrder() {
         int lastOrder = 0;
-        for (FavouriteFolder folder : folders) {
+        for (FavouriteFolder folder : mFolders) {
             if (folder.hasValidOrder() == false || folder.getOrder() <= lastOrder) {
                 folder.setOrder(lastOrder + 1);
             }
@@ -74,39 +80,46 @@ public class FavouritesManager {
     }
 
     public List<FavouriteFolder> getFolders() {
-        return folders;
+        return mFolders;
     }
 
     public void addFavourite(FavouriteFolder favouriteFolder) throws FolderAlreadyFavouriteException {
         long id = sqLiteHelper.insert(favouriteFolder);
         if (id == -1) throw new FolderAlreadyFavouriteException(favouriteFolder);
-        folders.add(favouriteFolder);
+        mFolders.add(favouriteFolder);
         notifyListeners();
     }
 
     public void removeFavourite(File file) {
-        for (FavouriteFolder folder : folders)
-            if (folder.equals(file)) {
+        for (FavouriteFolder folder : mFolders)
+            if (folder.equals(file) && folder.isRemovable()) {
                 removeFavourite(folder);
                 break;
             }
     }
 
     public void removeFavourite(FavouriteFolder favouriteFolder) {
-        folders.remove(favouriteFolder);
+        mFolders.remove(favouriteFolder);
         sqLiteHelper.delete(favouriteFolder);
         notifyListeners();
     }
 
     public boolean isFolderFavourite(File file) {
-        for (FavouriteFolder folder : folders)
+        for (FavouriteFolder folder : mFolders) {
             if (folder.equals(file))
                 return true;
-
+        }
         return false;
     }
 
-    public static interface FavouritesListener {
+    public boolean canRemoved(File file) {
+        if (Environment.getExternalStorageDirectory().equals(file)) {
+            return false;
+        }
+        return true;
+    }
+
+    public interface FavouritesListener {
         void onFavouritesChanged(FavouritesManager favouritesManager);
     }
 

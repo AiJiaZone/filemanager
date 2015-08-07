@@ -40,7 +40,7 @@
     <string name="add_to_homescreen">创建快捷方式</string>
     <string name="add_to_homescreen_multiple">创建快捷方式</string>
     <string name="shortcut_created">已添加到主屏幕</string>
-    <string name="root">根</string>
+    <string name="root">手机</string>
     <string name="cut">剪切</string>
     <string name="paste_here">粘贴到此处</string>
     <string name="objects_cut_to_clipboard">剪切到粘贴板</string>

@@ -36,25 +36,27 @@ public class FavouriteFolder extends NavDrawerShortcut implements Comparable<Fav
     private String label;
     @PrimaryKey
     private String path;
+    private boolean mRemovable = false;
 
     public FavouriteFolder() {
 
     }
 
-    public FavouriteFolder(File folder, String label) {
+    public FavouriteFolder(File folder, String label, boolean canRemoved) {
         this();
         if (folder.isDirectory() == false)
             throw new RuntimeException(folder.getName() + " is not a directory");
         this.path = folder.getAbsolutePath();
         this.label = label;
+        mRemovable = canRemoved;
     }
 
     public FavouriteFolder(File folder) {
-        this(folder, folder.getName());
+        this(folder, folder.getName(), false);
     }
 
     public FavouriteFolder(String path, String label) {
-        this(new File(path), label);
+        this(new File(path), label, false);
     }
 
     public File getFile() {
@@ -94,6 +96,14 @@ public class FavouriteFolder extends NavDrawerShortcut implements Comparable<Fav
 
     public boolean exists() {
         return getFile().exists();
+    }
+
+    public void setCanRemoved(boolean canRemoved) {
+        mRemovable = canRemoved;
+    }
+
+    public boolean isRemovable() {
+        return  mRemovable;
     }
 
     @Override

@@ -42,22 +42,30 @@ public class AppPreferences {
             CARD_LAYOUT_MEDIA = 0,
             CARD_LAYOUT_ALWAYS = 1,
             CARD_LAYOUT_NEVER = 2;
+
+    public static final int TYPE_LIST = 1;
+    public static final int TYPE_GRID = TYPE_LIST << 1;
     private static final String
             NAME = "FileExplorerPreferences",
-
-    PREF_START_FOLDER = "start_folder",
+            PREF_START_FOLDER = "start_folder",
             PREF_CARD_LAYOUT = "card_layout",
-            PREF_SORT_BY = "sort_by";
+            PREF_SORT_BY = "sort_by",
+            PREF_SHOW_TYPE = "show_type";
     private final static int DEFAULT_SORT_BY = SORT_BY_NAME;
 
     File mStartFolder = null;
     int mSortBy = SORT_BY_NAME;
     int mCardLayout = CARD_LAYOUT_MEDIA;
 
+    int mShowType = TYPE_GRID;
+
+    private static Context mContext = null;
+
     private AppPreferences() {
     }
 
     public static AppPreferences loadPreferences(Context context) {
+        mContext = context;
         AppPreferences instance = new AppPreferences();
         instance.loadFromSharedPreferences(context.getSharedPreferences(NAME, Context.MODE_PRIVATE));
         return instance;
@@ -80,6 +88,7 @@ public class AppPreferences {
         }
         this.mSortBy = sharedPreferences.getInt(PREF_SORT_BY, DEFAULT_SORT_BY);
         this.mCardLayout = sharedPreferences.getInt(PREF_CARD_LAYOUT, CARD_LAYOUT_MEDIA);
+        mShowType = sharedPreferences.getInt(PREF_SHOW_TYPE, TYPE_GRID);
     }
 
     private void saveToSharedPreferences(SharedPreferences sharedPreferences) {
@@ -87,6 +96,7 @@ public class AppPreferences {
                 .putString(PREF_START_FOLDER, mStartFolder.getAbsolutePath())
                 .putInt(PREF_SORT_BY, mSortBy)
                 .putInt(PREF_CARD_LAYOUT, mCardLayout)
+                .putInt(PREF_SHOW_TYPE, mShowType)
                 .apply();
     }
 
@@ -125,13 +135,21 @@ public class AppPreferences {
         return this;
     }
 
-    public File getmStartFolder() {
+    public void setShowType(int showType) {
+        mShowType = showType;
+        saveChangesAsync(mContext);
+    }
+    public int getShowType(){
+        return mShowType;
+    }
+
+    public File getStartFolder() {
         if (mStartFolder.exists() == false)
             mStartFolder = new File("/");
         return mStartFolder;
     }
 
-    public AppPreferences setmStartFolder(File mStartFolder) {
+    public AppPreferences setStartFolder(File mStartFolder) {
         this.mStartFolder = mStartFolder;
         return this;
     }

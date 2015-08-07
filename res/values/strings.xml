@@ -40,7 +40,7 @@
     <string name="add_to_homescreen">Create shortcut</string>
     <string name="add_to_homescreen_multiple">Create shortcuts</string>
     <string name="shortcut_created">Shortcut added to homescreen</string>
-    <string name="root">Root</string>
+    <string name="root">Phone</string>
     <string name="cut">Cut</string>
     <string name="paste_here">Paste here</string>
     <string name="objects_cut_to_clipboard">Objects cut to clipboard</string>

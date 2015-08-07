@@ -75,14 +75,14 @@
         android:title="@string/create_folder"
         android:visible="true" />
     <item
-        android:id="@+id/action_listview"
+        android:id="@+id/menu_listview"
         android:icon="@drawable/ic_about"
         android:orderInCategory="4"
         android:showAsAction="ifRoom"
         android:title="@string/list_view"
         android:visible="true"/>
     <item
-        android:id="@+id/action_gridview"
+        android:id="@+id/menu_gridview"
         android:icon="@drawable/ic_about"
         android:orderInCategory="4"
         android:showAsAction="ifRoom"

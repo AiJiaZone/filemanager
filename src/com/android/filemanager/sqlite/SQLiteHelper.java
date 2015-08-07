@@ -52,15 +52,20 @@ public class SQLiteHelper extends MSQLiteOpenHelper {
 
         List<FavouriteFolder> favouriteFolders = new ArrayList<FavouriteFolder>();
         if (Environment.getExternalStorageDirectory().isDirectory()) {
-            favouriteFolders.add(new FavouriteFolder(Environment.getExternalStorageDirectory(), FileUtils.DISPLAY_NAME_SD_CARD));
+            favouriteFolders.add(new FavouriteFolder(Environment.getExternalStorageDirectory(),
+                    FileUtils.DISPLAY_NAME_SD_CARD, false));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.downloads)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        getString(R.string.downloads),true));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), getString(R.string.music)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                        getString(R.string.music), true));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).isDirectory())
-                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), getString(R.string.photos)));
-        } else
-            favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory("/"), getString(R.string.root)));
+                favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                        getString(R.string.photos),true));
+        }
+        favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory("/"),
+                getString(R.string.root), false));
 
         for (FavouriteFolder favouriteFolder : favouriteFolders) {
             if (favouriteFolder.exists())

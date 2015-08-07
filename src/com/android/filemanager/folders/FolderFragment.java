@@ -52,6 +52,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -98,7 +99,7 @@ public class FolderFragment extends Fragment implements
     List<File> files = null;
     @SuppressWarnings("rawtypes")
     AsyncTask loadFilesTask = null;
-    AbsListView listView = null;
+    AbsListView mListView = null;
     FileAdapter fileAdapter;
     // set to true when selection shouldnt be cleared from switching out fragments
     boolean preserveSelection = false;
@@ -107,17 +108,17 @@ public class FolderFragment extends Fragment implements
     private ShareActionProvider shareActionProvider;
 
     public AbsListView getListView() {
-        return listView;
+        return mListView;
     }
 
     private void setListAdapter(FileAdapter fileAdapter) {
         this.fileAdapter = fileAdapter;
-        if (listView != null) {
-            listView.setAdapter(fileAdapter);
-            listView.setSelection(topVisibleItem);
+        if (mListView != null) {
+            mListView.setAdapter(fileAdapter);
+            mListView.setSelection(topVisibleItem);
 
             getView().findViewById(R.id.layoutMessage).setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -128,7 +129,7 @@ public class FolderFragment extends Fragment implements
 
     void showProgress() {
         if (getView() != null) {
-            getListView().setVisibility(View.GONE);
+            mListView.setVisibility(View.GONE);
             getView().findViewById(R.id.layoutMessage).setVisibility(View.VISIBLE);
             getView().findViewById(R.id.text_view).setVisibility(View.GONE);
         }
@@ -162,7 +163,7 @@ public class FolderFragment extends Fragment implements
         if (arguments != null && arguments.containsKey(EXTRA_DIR))
             currentDir = new File(arguments.getString(EXTRA_DIR));
         else
-            currentDir = getPreferences().getmStartFolder();
+            currentDir = getPreferences().getStartFolder();
 
         setHasOptionsMenu(true);
 
@@ -194,10 +195,10 @@ public class FolderFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        this.listView = (AbsListView) view.findViewById(android.R.id.list);
+        this.mListView = (AbsListView) view.findViewById(android.R.id.list);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            listView.setFastScrollAlwaysVisible(true);
+            mListView.setFastScrollAlwaysVisible(true);
         return view;
     }
 
@@ -278,12 +279,23 @@ public class FolderFragment extends Fragment implements
 
         menu.findItem(R.id.menu_selectAll).setVisible(!(files == null || files.isEmpty()));
 
-        if (getApplication().getFavouritesManager().isFolderFavourite(currentDir)) {
-            menu.findItem(R.id.menu_unfavourite).setVisible(true);
+        FavouritesManager fm = getApplication().getFavouritesManager();
+        if (fm.isFolderFavourite(currentDir)) {
+            menu.findItem(R.id.menu_unfavourite).setVisible(fm.canRemoved(currentDir)?true:false);
             menu.findItem(R.id.menu_favourite).setVisible(false);
         } else {
             menu.findItem(R.id.menu_unfavourite).setVisible(false);
             menu.findItem(R.id.menu_favourite).setVisible(true);
+        }
+
+        AppPreferences preferences = getPreferences();
+        int showType = preferences.getShowType();
+        if(showType == AppPreferences.TYPE_GRID) {
+            menu.findItem(R.id.menu_gridview).setVisible(false);
+            menu.findItem(R.id.menu_listview).setVisible(true);
+        } else {
+            menu.findItem(R.id.menu_gridview).setVisible(true);
+            menu.findItem(R.id.menu_listview).setVisible(false);
         }
     }
 
@@ -347,7 +359,7 @@ public class FolderFragment extends Fragment implements
                     final String directoryName = FileUtils.getFolderDisplayName(currentDir);
 
                     FavouritesManager favouritesManager = getApplication().getFavouritesManager();
-                    favouritesManager.addFavourite(new FavouriteFolder(currentDir, directoryName));
+                    favouritesManager.addFavourite(new FavouriteFolder(currentDir, directoryName, true));
                     getActivity().invalidateOptionsMenu();
                 } catch (FavouritesManager.FolderAlreadyFavouriteException e1) {
                     e1.printStackTrace();
@@ -390,8 +402,21 @@ public class FolderFragment extends Fragment implements
             case R.id.menu_refresh:
                 refreshFolder();
                 return true;
+            case R.id.menu_gridview:
+                updateViewType(AppPreferences.TYPE_GRID);
+                return true;
+            case R.id.menu_listview:
+                updateViewType(AppPreferences.TYPE_LIST);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateViewType(int type) {
+        ((GridView) mListView).setNumColumns(type);
+        getPreferences().setShowType(type);
+        getActivity().invalidateOptionsMenu();
+        mListView.invalidate();
     }
 
     public void pasteFiles() {
@@ -478,10 +503,10 @@ public class FolderFragment extends Fragment implements
 
         final String directoryName = FileUtils.getFolderDisplayName(currentDir);
         getActivity().setTitle(directoryName);
-        getListView().setOnItemClickListener(FolderFragment.this);
-        getListView().setOnScrollListener(this);
-        getListView().setOnItemLongClickListener(this);
-        getListView().setMultiChoiceModeListener(this);
+        mListView.setOnItemClickListener(FolderFragment.this);
+        mListView.setOnScrollListener(this);
+        mListView.setOnItemLongClickListener(this);
+        mListView.setMultiChoiceModeListener(this);
         getActivity().getActionBar().setSubtitle(FileUtils.getUserFriendlySdcardPath(currentDir));
 
         if (topVisibleItem <= DISTANCE_TO_HIDE_ACTIONBAR)
@@ -501,7 +526,7 @@ public class FolderFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         finishActionMode(true);
-        listView = null;
+        mListView = null;
         super.onDestroyView();
     }
 
@@ -750,8 +775,8 @@ public class FolderFragment extends Fragment implements
     }
 
     void finishSelection() {
-        if (listView != null)
-            listView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+        if (mListView != null)
+            mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
         clearFileSelection();
     }
 
@@ -805,8 +830,8 @@ public class FolderFragment extends Fragment implements
     }
 
     void clearFileSelection() {
-        if (listView != null)
-            listView.clearChoices();
+        if (mListView != null)
+            mListView.clearChoices();
         selectedFiles.clear();
         updateActionMode();
         if (fileAdapter != null)
@@ -822,7 +847,7 @@ public class FolderFragment extends Fragment implements
         if (files == null || files.isEmpty()) return;
 
         if (actionMode == null) {
-            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             actionMode = getActivity().startActionMode(this);
         }
 
@@ -834,7 +859,7 @@ public class FolderFragment extends Fragment implements
 
     void setFileSelected(File file, boolean selected) {
         if (actionMode == null) {
-            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             actionMode = getActivity().startActionMode(this);
         }
 
