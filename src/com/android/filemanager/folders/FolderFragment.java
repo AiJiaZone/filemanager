@@ -86,36 +86,64 @@ import java.util.List;
 public class FolderFragment extends Fragment implements
         OnItemClickListener, OnScrollListener,
         OnItemLongClickListener, MultiChoiceModeListener, FileAdapter.OnFileSelectedListener {
-    public static final String
-            EXTRA_DIR = "directory",
-            EXTRA_SELECTED_FILES = "selected_files",
-            EXTRA_SCROLL_POSITION = "scroll_position";
+    public static final String EXTRA_DIR = "directory";
+    public static final String EXTRA_SELECTED_FILES = "selected_files";
+    public static final String EXTRA_SCROLL_POSITION = "scroll_position";
     private static final String LOG_TAG = "FolderFragment";
     private final int DISTANCE_TO_HIDE_ACTIONBAR = 0;
-    private final HashSet<File> selectedFiles = new HashSet<File>();
-    File currentDir,
-            nextDir = null;
-    int topVisibleItem = 0;
-    List<File> files = null;
+    private final HashSet<File> mSelectedLists = new HashSet<File>();
+    File mCurrentDir = null;
+    File mNextDir = null;
+    int mTopVisItem = 0;
+    List<File> mFiles = null;
     @SuppressWarnings("rawtypes")
-    AsyncTask loadFilesTask = null;
+    AsyncTask mLoadTask = null;
     AbsListView mListView = null;
-    FileAdapter fileAdapter;
-    // set to true when selection shouldnt be cleared from switching out fragments
-    boolean preserveSelection = false;
-    FilePreviewCache thumbCache;
-    private ActionMode actionMode = null;
-    private ShareActionProvider shareActionProvider;
+    FileAdapter mAdapter;
+    // set to true when selection shouldn't be cleared from switching out fragments
+    boolean mPreserveSelection = false;
+    FilePreviewCache mThumbCache;
+    private ActionMode mActionMode = null;
+    private ShareActionProvider mShareProvider;
+    private AppPreferences mAppPreferences = null;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
+        if (savedInstanceState != null) {
+            mTopVisItem = savedInstanceState.getInt(EXTRA_SCROLL_POSITION, 0);
+            mSelectedLists.addAll((HashSet<File>) savedInstanceState.getSerializable(EXTRA_SELECTED_FILES));
+        }
+
+        mAppPreferences = getPreferences();
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey(EXTRA_DIR)) {
+            mCurrentDir = new File(arguments.getString(EXTRA_DIR));
+        } else {
+            mCurrentDir = mAppPreferences.getStartFolder();
+        }
+
+        loadFileList();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
 
     public AbsListView getListView() {
         return mListView;
     }
 
     private void setListAdapter(FileAdapter fileAdapter) {
-        this.fileAdapter = fileAdapter;
+        this.mAdapter = fileAdapter;
         if (mListView != null) {
             mListView.setAdapter(fileAdapter);
-            mListView.setSelection(topVisibleItem);
+            mListView.setSelection(mTopVisItem);
 
             getView().findViewById(R.id.layoutMessage).setVisibility(View.GONE);
             mListView.setVisibility(View.VISIBLE);
@@ -145,31 +173,6 @@ public class FolderFragment extends Fragment implements
         return getApplication().getAppPreferences();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-
-        Log.d(LOG_TAG, "Fragment created");
-
-        if (savedInstanceState != null) {
-            this.topVisibleItem = savedInstanceState.getInt(EXTRA_SCROLL_POSITION, 0);
-            this.selectedFiles.addAll((HashSet<File>) savedInstanceState.getSerializable(EXTRA_SELECTED_FILES));
-        }
-
-        Bundle arguments = getArguments();
-
-        if (arguments != null && arguments.containsKey(EXTRA_DIR))
-            currentDir = new File(arguments.getString(EXTRA_DIR));
-        else
-            currentDir = getPreferences().getStartFolder();
-
-        setHasOptionsMenu(true);
-
-        loadFileList();
-    }
-
     void showMessage(CharSequence message) {
         View view = getView();
         if (view != null) {
@@ -196,7 +199,7 @@ public class FolderFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         this.mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((GridView)mListView).setNumColumns(getPreferences().getShowType());
+        ((GridView)mListView).setNumColumns(mAppPreferences.getShowType());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             mListView.setFastScrollAlwaysVisible(true);
@@ -207,25 +210,27 @@ public class FolderFragment extends Fragment implements
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (thumbCache != null) {
+        if (mThumbCache != null) {
             if (getView() == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
-                thumbCache.evictAll();
-            else thumbCache.trimToSize(1024 * 1024);
+                mThumbCache.evictAll();
+            else mThumbCache.trimToSize(1024 * 1024);
         }
     }
 
     void loadFileList() {
-        if (loadFilesTask != null) return;
-        this.loadFilesTask = new AsyncTask<File, Void, AsyncResult<File[]>>() {
+        if (mLoadTask != null) return;
+
+        mLoadTask = new AsyncTask<File, Void, AsyncResult<File[]>>() {
             @Override
             protected AsyncResult<File[]> doInBackground(File... params) {
                 try {
                     File[] files = params[0].listFiles(FileUtils.DEFAULT_FILE_FILTER);
                     if (files == null)
-                        throw new NullPointerException(getString(R.string.cannot_read_directory, params[0].getName()));
+                        throw new NullPointerException(
+                                getString(R.string.cannot_read_directory, params[0].getName()));
                     if (isCancelled())
                         throw new Exception("Task cancelled");
-                    Arrays.sort(files, getPreferences().getFileSortingComparator());
+                    Arrays.sort(files, mAppPreferences.getFileSortingComparator());
                     return new AsyncResult<File[]>(files);
                 } catch (Exception e) {
                     return new AsyncResult<File[]>(e);
@@ -234,30 +239,34 @@ public class FolderFragment extends Fragment implements
 
             @Override
             protected void onCancelled(AsyncResult<File[]> result) {
-                loadFilesTask = null;
+                mLoadTask = null;
             }
 
             @Override
             protected void onPostExecute(AsyncResult<File[]> result) {
                 Log.d("folder fragment", "Task finished");
-                loadFilesTask = null;
+                mLoadTask = null;
 
-                FileAdapter adapter;
                 try {
-                    files = Arrays.asList(result.getResult());
+                    mFiles = Arrays.asList(result.getResult());
 
-                    if (files.isEmpty()) {
+                    if (mFiles.isEmpty()) {
                         showMessage(R.string.folder_empty);
                         return;
                     }
-                    adapter = new FileAdapter(getActivity(), files, getApplication().getFileIconResolver());
-                    final int cardPreference = getPreferences().getCardLayout();
-                    if (cardPreference == AppPreferences.CARD_LAYOUT_ALWAYS || (cardPreference == AppPreferences.CARD_LAYOUT_MEDIA && FileUtils.isMediaDirectory(currentDir))) {
-                        if (thumbCache == null) thumbCache = new FilePreviewCache();
-                        adapter = new FileCardAdapter(getActivity(), files, thumbCache, getApplication().getFileIconResolver());
-                    } else
-                        adapter = new FileAdapter(getActivity(), files, getApplication().getFileIconResolver());
-                    adapter.setSelectedFiles(selectedFiles);
+                    FileAdapter adapter;
+                    final int cardPreference = mAppPreferences.getCardLayout();
+                    if (cardPreference == AppPreferences.CARD_LAYOUT_ALWAYS || (cardPreference == AppPreferences.CARD_LAYOUT_MEDIA && FileUtils.isMediaDirectory(mCurrentDir))) {
+                        if (mThumbCache == null) {
+                            mThumbCache = new FilePreviewCache();
+                        }
+                        adapter = new FileCardAdapter(getActivity(), mFiles, mThumbCache,
+                                getApplication().getFileIconResolver());
+                    } else {
+                        adapter = new FileAdapter(getActivity(), mFiles,
+                                getApplication().getFileIconResolver());
+                    }
+                    adapter.setSelectedFiles(mSelectedLists);
                     adapter.setOnFileSelectedListener(FolderFragment.this);
                     adapter.setFontApplicator(getFontApplicator());
                     setListAdapter(adapter);
@@ -265,12 +274,12 @@ public class FolderFragment extends Fragment implements
                 } catch (Exception e) {
                     // exception was thrown while loading files
                     showMessage(e.getMessage());
-                    adapter = new FileAdapter(getActivity(), getApplication().getFileIconResolver());
+                    //adapter = new FileAdapter(getActivity(), getApplication().getFileIconResolver());
                 }
 
                 getActivity().invalidateOptionsMenu();
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, currentDir);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCurrentDir);
     }
 
     @Override
@@ -278,19 +287,18 @@ public class FolderFragment extends Fragment implements
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.folder_browser, menu);
 
-        menu.findItem(R.id.menu_selectAll).setVisible(!(files == null || files.isEmpty()));
+        menu.findItem(R.id.menu_selectAll).setVisible(!(mFiles == null || mFiles.isEmpty()));
 
         FavouritesManager fm = getApplication().getFavouritesManager();
-        if (fm.isFolderFavourite(currentDir)) {
-            menu.findItem(R.id.menu_unfavourite).setVisible(fm.canRemoved(currentDir)?true:false);
+        if (fm.isFolderFavourite(mCurrentDir)) {
+            menu.findItem(R.id.menu_unfavourite).setVisible(fm.canRemoved(mCurrentDir)?true:false);
             menu.findItem(R.id.menu_favourite).setVisible(false);
         } else {
             menu.findItem(R.id.menu_unfavourite).setVisible(false);
             menu.findItem(R.id.menu_favourite).setVisible(true);
         }
 
-        AppPreferences preferences = getPreferences();
-        int showType = preferences.getShowType();
+        int showType = mAppPreferences.getShowType();
         if(showType == AppPreferences.TYPE_GRID) {
             menu.findItem(R.id.menu_gridview).setVisible(false);
             menu.findItem(R.id.menu_listview).setVisible(true);
@@ -304,7 +312,7 @@ public class FolderFragment extends Fragment implements
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.menu_paste).setVisible(Clipboard.getInstance().isEmpty() == false);
-        menu.findItem(R.id.menu_navigate_up).setVisible(currentDir.getParentFile() != null);
+        menu.findItem(R.id.menu_navigate_up).setVisible(mCurrentDir.getParentFile() != null);
     }
 
     void showEditTextDialog(int title, int okButtonText, final OnResultListener<CharSequence> enteredTextResult, CharSequence hint, CharSequence defaultValue) {
@@ -339,11 +347,11 @@ public class FolderFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_selectAll:
-                selectFiles(this.files);
+                selectFiles(this.mFiles);
                 return true;
 
             case R.id.menu_navigate_up:
-                String newFolder = currentDir.getParent();
+                String newFolder = mCurrentDir.getParent();
                 if (newFolder != null) {
                     Bundle args = new Bundle(1);
                     args.putString(EXTRA_DIR, newFolder);
@@ -357,10 +365,10 @@ public class FolderFragment extends Fragment implements
 
             case R.id.menu_favourite:
                 try {
-                    final String directoryName = FileUtils.getFolderDisplayName(currentDir);
+                    final String directoryName = FileUtils.getFolderDisplayName(mCurrentDir);
 
                     FavouritesManager favouritesManager = getApplication().getFavouritesManager();
-                    favouritesManager.addFavourite(new FavouriteFolder(currentDir, directoryName, true));
+                    favouritesManager.addFavourite(new FavouriteFolder(mCurrentDir, directoryName, true));
                     getActivity().invalidateOptionsMenu();
                 } catch (FavouritesManager.FolderAlreadyFavouriteException e1) {
                     e1.printStackTrace();
@@ -369,7 +377,7 @@ public class FolderFragment extends Fragment implements
 
             case R.id.menu_unfavourite:
                 FavouritesManager favouritesManager = getApplication().getFavouritesManager();
-                favouritesManager.removeFavourite(currentDir);
+                favouritesManager.removeFavourite(mCurrentDir);
                 getActivity().invalidateOptionsMenu();
                 return true;
 
@@ -380,7 +388,7 @@ public class FolderFragment extends Fragment implements
                     public void onResult(AsyncResult<CharSequence> result) {
                         try {
                             String name = result.getResult().toString();
-                            File newFolder = new File(currentDir, name);
+                            File newFolder = new File(mCurrentDir, name);
                             if (newFolder.mkdirs()) {
                                 refreshFolder();
                                 Toast.makeText(getActivity(), R.string.folder_created_successfully, Toast.LENGTH_SHORT).show();
@@ -415,7 +423,7 @@ public class FolderFragment extends Fragment implements
 
     private void updateViewType(int type) {
         ((GridView) mListView).setNumColumns(type);
-        getPreferences().setShowType(type);
+        mAppPreferences.setShowType(type);
         getActivity().invalidateOptionsMenu();
         mListView.invalidate();
     }
@@ -448,7 +456,7 @@ public class FolderFragment extends Fragment implements
                 try {
                     final int total = FileUtils.countFilesIn(params[0].getFiles());
                     final int[] progress = {0};
-                    params[0].paste(currentDir, new FileOperationListener() {
+                    params[0].paste(mCurrentDir, new FileOperationListener() {
                         @Override
                         public void onFileProcessed(String filename) {
                             progress[0]++;
@@ -498,30 +506,29 @@ public class FolderFragment extends Fragment implements
 
         loadFileList();
 
-        if (selectedFiles.isEmpty() == false) {
-            selectFiles(selectedFiles);
+        if (mSelectedLists.isEmpty() == false) {
+            selectFiles(mSelectedLists);
         }
 
-        final String directoryName = FileUtils.getFolderDisplayName(currentDir);
+        final String directoryName = FileUtils.getFolderDisplayName(mCurrentDir);
         getActivity().setTitle(directoryName);
         mListView.setOnItemClickListener(FolderFragment.this);
         mListView.setOnScrollListener(this);
         mListView.setOnItemLongClickListener(this);
         mListView.setMultiChoiceModeListener(this);
-        getActivity().getActionBar().setSubtitle(FileUtils.getUserFriendlySdcardPath(currentDir));
+        getActivity().getActionBar().setSubtitle(FileUtils.getUserFriendlySdcardPath(mCurrentDir));
 
-        if (topVisibleItem <= DISTANCE_TO_HIDE_ACTIONBAR)
+        if (mTopVisItem <= DISTANCE_TO_HIDE_ACTIONBAR)
             setActionbarVisibility(true);
 
         // add listview header to push items below the actionbar
         ListViewUtils.addListViewHeader(getListView(), getActivity());
 
-        if (fileAdapter != null)
-            setListAdapter(fileAdapter);
+        if (mAdapter != null)
+            setListAdapter(mAdapter);
 
         FolderActivity activity = (FolderActivity) getActivity();
-        activity.setLastFolder(currentDir);
-
+        activity.setLastFolder(mCurrentDir);
     }
 
     @Override
@@ -533,22 +540,22 @@ public class FolderFragment extends Fragment implements
 
     @Override
     public void onDestroy() {
-        if (loadFilesTask != null)
-            loadFilesTask.cancel(true);
-        if (thumbCache != null)
-            thumbCache.evictAll();
+        if (mLoadTask != null)
+            mLoadTask.cancel(true);
+        if (mThumbCache != null)
+            mThumbCache.evictAll();
         super.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SCROLL_POSITION, topVisibleItem);
-        outState.putSerializable(EXTRA_SELECTED_FILES, selectedFiles);
+        outState.putInt(EXTRA_SCROLL_POSITION, mTopVisItem);
+        outState.putSerializable(EXTRA_SELECTED_FILES, mSelectedLists);
     }
 
     void navigateTo(File folder) {
-        nextDir = folder;
+        mNextDir = folder;
         FolderActivity activity = (FolderActivity) getActivity();
         FolderFragment fragment = new FolderFragment();
         Bundle args = new Bundle();
@@ -580,7 +587,7 @@ public class FolderFragment extends Fragment implements
     public void onItemClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
         Object selectedObject = adapterView.getItemAtPosition(position);
         if (selectedObject instanceof File) {
-            if (actionMode == null) {
+            if (mActionMode == null) {
                 File selectedFile = (File) selectedObject;
                 if (selectedFile.isDirectory())
                     navigateTo(selectedFile);
@@ -593,19 +600,19 @@ public class FolderFragment extends Fragment implements
     }
 
     void setActionbarVisibility(boolean visible) {
-        if (actionMode == null || visible == true) // cannot hide CAB
+        if (mActionMode == null || visible == true) // cannot hide CAB
             ((FolderActivity) getActivity()).setActionbarVisible(visible);
     }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
                          int visibleItemCount, int totalItemCount) {
-        if (firstVisibleItem < this.topVisibleItem - DISTANCE_TO_HIDE_ACTIONBAR) {
+        if (firstVisibleItem < this.mTopVisItem - DISTANCE_TO_HIDE_ACTIONBAR) {
             setActionbarVisibility(true);
-            this.topVisibleItem = firstVisibleItem;
-        } else if (firstVisibleItem > this.topVisibleItem + DISTANCE_TO_HIDE_ACTIONBAR) {
+            this.mTopVisItem = firstVisibleItem;
+        } else if (firstVisibleItem > this.mTopVisItem + DISTANCE_TO_HIDE_ACTIONBAR) {
             setActionbarVisibility(false);
-            this.topVisibleItem = firstVisibleItem;
+            this.mTopVisItem = firstVisibleItem;
         }
 
         ListAdapter adapter = view.getAdapter();
@@ -653,12 +660,12 @@ public class FolderFragment extends Fragment implements
         switch (item.getItemId()) {
             case R.id.action_delete:
                 new AlertDialog.Builder(getActivity())
-                        .setMessage(getString(R.string.delete_d_items_, selectedFiles.size()))
+                        .setMessage(getString(R.string.delete_d_items_, mSelectedLists.size()))
                         .setPositiveButton(R.string.delete, new OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                int n = FileUtils.deleteFiles(selectedFiles);
+                                int n = FileUtils.deleteFiles(mSelectedLists);
                                 Toast.makeText(getActivity(), getString(R.string.multi_files_deleted, n), Toast.LENGTH_SHORT).show();
                                 refreshFolder();
                                 finishActionMode(false);
@@ -670,29 +677,29 @@ public class FolderFragment extends Fragment implements
 
             case R.id.action_selectAll:
                 if (isEverythingSelected()) clearFileSelection();
-                else selectFiles(files);
+                else selectFiles(mFiles);
                 return true;
 
             case R.id.action_info:
-                if (selectedFiles.isEmpty()) return true;
-                showFileInfo(selectedFiles);
+                if (mSelectedLists.isEmpty()) return true;
+                showFileInfo(mSelectedLists);
                 return true;
 
             case R.id.action_copy:
-                Clipboard.getInstance().addFiles(selectedFiles, Clipboard.FileAction.Copy);
+                Clipboard.getInstance().addFiles(mSelectedLists, Clipboard.FileAction.Copy);
                 Toast.makeText(getActivity(), R.string.objects_copied_to_clipboard, Toast.LENGTH_SHORT).show();
                 finishActionMode(false);
                 return true;
 
             case R.id.action_cut:
                 Clipboard clipboard = Clipboard.getInstance();
-                clipboard.addFiles(selectedFiles, Clipboard.FileAction.Cut);
+                clipboard.addFiles(mSelectedLists, Clipboard.FileAction.Cut);
                 Toast.makeText(getActivity(), R.string.objects_cut_to_clipboard, Toast.LENGTH_SHORT).show();
                 finishActionMode(false);
                 return true;
 
             case R.id.action_rename:
-                final File fileToRename = (File) selectedFiles.toArray()[0];
+                final File fileToRename = (File) mSelectedLists.toArray()[0];
                 showEditTextDialog(fileToRename.isDirectory() ? R.string.rename_folder : R.string.rename_file, R.string.rename, new OnResultListener<CharSequence>() {
 
                     @Override
@@ -716,10 +723,10 @@ public class FolderFragment extends Fragment implements
 
             case R.id.menu_add_homescreen_icon:
 
-                for (File file : selectedFiles)
+                for (File file : mSelectedLists)
                     IntentUtils.createShortcut(getActivity(), file);
                 Toast.makeText(getActivity(), R.string.shortcut_created, Toast.LENGTH_SHORT).show();
-                actionMode.finish();
+                mActionMode.finish();
                 return true;
         }
         return false;
@@ -731,34 +738,34 @@ public class FolderFragment extends Fragment implements
     }
 
     void updateActionMode() {
-        if (actionMode != null) {
-            actionMode.invalidate();
-            int count = selectedFiles.size();
-            actionMode.setTitle(getString(R.string.multi_objects, count));
+        if (mActionMode != null) {
+            mActionMode.invalidate();
+            int count = mSelectedLists.size();
+            mActionMode.setTitle(getString(R.string.multi_objects, count));
 
-            actionMode.setSubtitle(FileUtils.combineFileNames(selectedFiles));
+            mActionMode.setSubtitle(FileUtils.combineFileNames(mSelectedLists));
 
-            if (shareActionProvider != null) {
+            if (mShareProvider != null) {
                 final Intent shareIntent;
-                if (selectedFiles.isEmpty()) shareIntent = null;
-                else if (selectedFiles.size() == 1) {
-                    File file = (File) selectedFiles.toArray()[0];
+                if (mSelectedLists.isEmpty()) shareIntent = null;
+                else if (mSelectedLists.size() == 1) {
+                    File file = (File) mSelectedLists.toArray()[0];
                     shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType(FileUtils.getFileMimeType(file));
                     shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
                 } else {
-                    ArrayList<Uri> fileUris = new ArrayList<Uri>(selectedFiles.size());
+                    ArrayList<Uri> fileUris = new ArrayList<Uri>(mSelectedLists.size());
 
-                    for (File file : selectedFiles)
+                    for (File file : mSelectedLists)
                         if (file.isDirectory() == false) {
                             fileUris.add(Uri.fromFile(file));
                         }
                     shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                     shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, fileUris);
-                    shareIntent.setType(FileUtils.getCollectiveMimeType(selectedFiles));
+                    shareIntent.setType(FileUtils.getCollectiveMimeType(mSelectedLists));
                 }
 
-                shareActionProvider.setShareIntent(shareIntent);
+                mShareProvider.setShareIntent(shareIntent);
             }
         }
     }
@@ -770,8 +777,8 @@ public class FolderFragment extends Fragment implements
         getActivity().getMenuInflater().inflate(R.menu.action_file_single, menu);
 
         MenuItem shareMenuItem = menu.findItem(R.id.action_share);
-        shareActionProvider = (ShareActionProvider) shareMenuItem.getActionProvider();
-        this.preserveSelection = false;
+        mShareProvider = (ShareActionProvider) shareMenuItem.getActionProvider();
+        this.mPreserveSelection = false;
         return true;
     }
 
@@ -782,23 +789,23 @@ public class FolderFragment extends Fragment implements
     }
 
     void finishActionMode(boolean preserveSelection) {
-        this.preserveSelection = preserveSelection;
-        if (actionMode != null)
-            actionMode.finish();
+        this.mPreserveSelection = preserveSelection;
+        if (mActionMode != null)
+            mActionMode.finish();
     }
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-        actionMode = null;
-        shareActionProvider = null;
-        if (preserveSelection == false)
+        mActionMode = null;
+        mShareProvider = null;
+        if (mPreserveSelection == false)
             finishSelection();
         Log.d(LOG_TAG, "Action mode destroyed");
     }
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        int count = selectedFiles.size();
+        int count = mSelectedLists.size();
         if (count == 1) {
             menu.findItem(R.id.action_rename).setVisible(true);
             menu.findItem(R.id.menu_add_homescreen_icon).setTitle(R.string.add_to_homescreen);
@@ -810,7 +817,7 @@ public class FolderFragment extends Fragment implements
         // show Share button if no folder was selected
         boolean allowShare = (count > 0);
         if (allowShare) {
-            for (File file : selectedFiles)
+            for (File file : mSelectedLists)
                 if (file.isDirectory()) {
                     allowShare = false;
                     break;
@@ -827,52 +834,52 @@ public class FolderFragment extends Fragment implements
     }
 
     void toggleFileSelected(File file) {
-        setFileSelected(file, !selectedFiles.contains(file));
+        setFileSelected(file, !mSelectedLists.contains(file));
     }
 
     void clearFileSelection() {
         if (mListView != null)
             mListView.clearChoices();
-        selectedFiles.clear();
+        mSelectedLists.clear();
         updateActionMode();
-        if (fileAdapter != null)
-            fileAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
         Log.d(LOG_TAG, "Selection cleared");
     }
 
     boolean isEverythingSelected() {
-        return selectedFiles.size() == files.size();
+        return mSelectedLists.size() == mFiles.size();
     }
 
     void selectFiles(Collection<File> files) {
         if (files == null || files.isEmpty()) return;
 
-        if (actionMode == null) {
+        if (mActionMode == null) {
             mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-            actionMode = getActivity().startActionMode(this);
+            mActionMode = getActivity().startActionMode(this);
         }
 
-        selectedFiles.addAll(files);
+        mSelectedLists.addAll(files);
         updateActionMode();
-        if (fileAdapter != null)
-            fileAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
     }
 
     void setFileSelected(File file, boolean selected) {
-        if (actionMode == null) {
+        if (mActionMode == null) {
             mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-            actionMode = getActivity().startActionMode(this);
+            mActionMode = getActivity().startActionMode(this);
         }
 
         if (selected)
-            selectedFiles.add(file);
+            mSelectedLists.add(file);
         else
-            selectedFiles.remove(file);
+            mSelectedLists.remove(file);
         updateActionMode();
-        if (fileAdapter != null)
-            fileAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
 
-        if (selectedFiles.isEmpty())
+        if (mSelectedLists.isEmpty())
             finishActionMode(false);
     }
 

@@ -273,7 +273,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
         FolderFragment folderFragment = getFolderFragment();
         if (folderFragment == null)
             throw new FolderNotOpenException();
-        else return folderFragment.currentDir;
+        else return folderFragment.mCurrentDir;
     }
 
     @Override
