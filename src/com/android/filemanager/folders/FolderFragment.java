@@ -196,6 +196,7 @@ public class FolderFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         this.mListView = (AbsListView) view.findViewById(android.R.id.list);
+        ((GridView)mListView).setNumColumns(getPreferences().getShowType());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             mListView.setFastScrollAlwaysVisible(true);
