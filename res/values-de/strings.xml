@@ -53,7 +53,7 @@
     <string name="create">Erstellen</string>
     <string name="folder_created_successfully">Ordner erfolgreich erstellt</string>
     <string name="loading_">Lade…</string>
-    <string name="folder_could_not_be_created">Ordner kann nicht erstellt werden</string>
+    <string name="folder_created_failed">Ordner kann nicht erstellt werden</string>
     <string name="pasting_files_">Pasting files…</string>
     <string name="downloads">Downloads</string>
     <string name="music">Musik</string>

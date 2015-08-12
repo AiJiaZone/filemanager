@@ -19,7 +19,7 @@ public class SerializationUtils {
     }
 
     public static byte[] serialize(Object object) throws IOException, NotSerializableException {
-        if(!(object instanceof Serializable)) {
+        if (!(object instanceof Serializable)) {
             throw new NotSerializableException();
         } else {
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
@@ -32,7 +32,7 @@ public class SerializationUtils {
                 var4 = byteOutStream.toByteArray();
             } finally {
                 byteOutStream.close();
-                if(objectOut != null) {
+                if (objectOut != null) {
                     objectOut.close();
                 }
 
@@ -52,7 +52,7 @@ public class SerializationUtils {
             var4 = objectIn.readObject();
         } finally {
             inStream.close();
-            if(objectIn != null) {
+            if (objectIn != null) {
                 objectIn.close();
             }
 

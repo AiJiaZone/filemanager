@@ -5,5 +5,5 @@ package com.android.utils;
  */
 public class FileManagerConstants {
     // Don't save the last file when quit APP
-    final static public boolean DISABLE_SAVE_LASTFILE= true;
+    final static public boolean DISABLE_SAVE_LASTFILE = true;
 }

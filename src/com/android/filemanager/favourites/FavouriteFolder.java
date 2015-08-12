@@ -103,7 +103,7 @@ public class FavouriteFolder extends NavDrawerShortcut implements Comparable<Fav
     }
 
     public boolean isRemovable() {
-        return  mRemovable;
+        return mRemovable;
     }
 
     @Override

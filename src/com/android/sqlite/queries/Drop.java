@@ -5,8 +5,6 @@
 
 package com.android.sqlite.queries;
 
-import com.android.sqlite.queries.QueryBuilder;
-
 public class Drop extends QueryBuilder {
     private boolean ifExists = false;
 
@@ -16,7 +14,7 @@ public class Drop extends QueryBuilder {
 
     public String build() {
         StringBuilder builder = new StringBuilder("DROP TABLE ");
-        if(this.ifExists) {
+        if (this.ifExists) {
             builder.append("IF EXISTS ");
         }
 

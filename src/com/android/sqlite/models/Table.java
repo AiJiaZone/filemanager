@@ -7,8 +7,10 @@ package com.android.sqlite.models;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import com.android.sqlite.SerializationUtils;
+
 import com.android.sqlite.Annotations.TableName;
+import com.android.sqlite.SerializationUtils;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,39 +24,6 @@ public class Table {
     protected final List<Column> columns;
     protected final List<Column> primaryKeys;
 
-    public static Table fromCursor(String tableName, Cursor cursor) {
-        Table result = new Table(tableName, new ArrayList(cursor.getCount()));
-
-        while(cursor.moveToNext()) {
-            Column column = Column.fromCursor(cursor, result);
-            result.columns.add(column);
-            if(column.isPRIMARY_KEY()) {
-                result.primaryKeys.add(column);
-            }
-        }
-
-        return result;
-    }
-
-    public List<String> upgradeTable(Table upgradeFrom) {
-        ArrayList result = new ArrayList();
-        Iterator var4 = this.columns.iterator();
-
-        while(var4.hasNext()) {
-            Column column = (Column)var4.next();
-            if(!upgradeFrom.columns.contains(column)) {
-                StringBuilder resultBuilder = (new StringBuilder("Alter table `")).append(this.name).append("` ADD COLUMN ").append(column.getBuilder()).append(';');
-                result.add(resultBuilder.toString());
-            }
-        }
-
-        return result;
-    }
-
-    public static List<String> upgradeTable(Table currentTable, Table newTable) {
-        return newTable.upgradeTable(currentTable);
-    }
-
     private Table(String name, List<Column> columns) {
         this.name = name;
         this.columns = columns;
@@ -62,8 +31,8 @@ public class Table {
     }
 
     public Table(Class<?> type) {
-        if(type.isAnnotationPresent(TableName.class)) {
-            this.name = ((TableName)type.getAnnotation(TableName.class)).value();
+        if (type.isAnnotationPresent(TableName.class)) {
+            this.name = ((TableName) type.getAnnotation(TableName.class)).value();
         } else {
             this.name = type.getSimpleName();
         }
@@ -74,13 +43,13 @@ public class Table {
         this.primaryKeys = new ArrayList(1);
         Iterator var4 = fields.iterator();
 
-        while(var4.hasNext()) {
-            Field field = (Field)var4.next();
-            if((field.getModifiers() & 152) == 0) {
+        while (var4.hasNext()) {
+            Field field = (Field) var4.next();
+            if ((field.getModifiers() & 152) == 0) {
                 Column column = new Column(field, this);
-                if(column.getDataType() != null) {
+                if (column.getDataType() != null) {
                     this.columns.add(column);
-                    if(column.PRIMARY_KEY) {
+                    if (column.PRIMARY_KEY) {
                         this.primaryKeys.add(column);
                     }
                 }
@@ -89,21 +58,54 @@ public class Table {
 
     }
 
+    public static Table fromCursor(String tableName, Cursor cursor) {
+        Table result = new Table(tableName, new ArrayList(cursor.getCount()));
+
+        while (cursor.moveToNext()) {
+            Column column = Column.fromCursor(cursor, result);
+            result.columns.add(column);
+            if (column.isPRIMARY_KEY()) {
+                result.primaryKeys.add(column);
+            }
+        }
+
+        return result;
+    }
+
+    public static List<String> upgradeTable(Table currentTable, Table newTable) {
+        return newTable.upgradeTable(currentTable);
+    }
+
     private static void getAllFields(Class<?> type, List<Field> fields) {
-        if(type != null) {
+        if (type != null) {
             fields.addAll(Arrays.asList(type.getDeclaredFields()));
             getAllFields(type.getSuperclass(), fields);
         }
     }
 
+    public List<String> upgradeTable(Table upgradeFrom) {
+        ArrayList result = new ArrayList();
+        Iterator var4 = this.columns.iterator();
+
+        while (var4.hasNext()) {
+            Column column = (Column) var4.next();
+            if (!upgradeFrom.columns.contains(column)) {
+                StringBuilder resultBuilder = (new StringBuilder("Alter table `")).append(this.name).append("` ADD COLUMN ").append(column.getBuilder()).append(';');
+                result.add(resultBuilder.toString());
+            }
+        }
+
+        return result;
+    }
+
     public Column getIntegerPrimaryKey() {
         Column primaryKey = this.getPrimaryKey();
-        return primaryKey != null && primaryKey.getDataType() == "INTEGER"?primaryKey:null;
+        return primaryKey != null && primaryKey.getDataType() == "INTEGER" ? primaryKey : null;
     }
 
     public void setRowID(Object object, long id) {
         Column primaryKey = this.getIntegerPrimaryKey();
-        if(primaryKey != null && id != -1L) {
+        if (primaryKey != null && id != -1L) {
             primaryKey.setIntegerValue(object, id);
         }
 
@@ -126,32 +128,32 @@ public class Table {
     }
 
     public Column getPrimaryKey() {
-        return this.primaryKeys.size() == 1?(Column)this.primaryKeys.get(0):null;
+        return this.primaryKeys.size() == 1 ? (Column) this.primaryKeys.get(0) : null;
     }
 
     public ContentValues getContentValues(Object object) {
-        return this.getContentValues(object, (Collection)null);
+        return this.getContentValues(object, (Collection) null);
     }
 
     public ContentValues getContentValues(Object object, Collection<String> colNames) {
         ContentValues values = new ContentValues(this.columns.size());
         Iterator var5 = this.columns.iterator();
 
-        while(true) {
+        while (true) {
             Column column;
             do {
-                if(!var5.hasNext()) {
+                if (!var5.hasNext()) {
                     return values;
                 }
 
-                column = (Column)var5.next();
-            } while(colNames != null && !colNames.contains(column.name));
+                column = (Column) var5.next();
+            } while (colNames != null && !colNames.contains(column.name));
 
             try {
                 Object value = column.getValue(object);
-                if(value == null) {
+                if (value == null) {
                     values.putNull(column.name);
-                } else if(column.getFieldType() == 103) {
+                } else if (column.getFieldType() == 103) {
                     values.put(column.name, SerializationUtils.serialize(value));
                 } else {
                     values.put(column.name, value.toString());
@@ -169,8 +171,8 @@ public class Table {
         StringBuilder builder = new StringBuilder();
         String glue = "";
 
-        for(Iterator var5 = columns.iterator(); var5.hasNext(); glue = " AND ") {
-            Column col = (Column)var5.next();
+        for (Iterator var5 = columns.iterator(); var5.hasNext(); glue = " AND ") {
+            Column col = (Column) var5.next();
             builder.append(glue).append('`').append(col.name).append('`').append('=').append('?');
         }
 
@@ -180,10 +182,10 @@ public class Table {
     private String[] getWhereArgs(List<Column> columns, Object object) {
         String[] result = new String[columns.size()];
 
-        for(int i = 0; i < result.length; ++i) {
+        for (int i = 0; i < result.length; ++i) {
             try {
-                Object e = ((Column)columns.get(i)).getValue(object);
-                if(e == null) {
+                Object e = ((Column) columns.get(i)).getValue(object);
+                if (e == null) {
                     result[i] = null;
                 } else {
                     result[i] = e.toString();
@@ -229,25 +231,27 @@ public class Table {
         boolean columnId = true;
         Iterator var6 = this.columns.iterator();
 
-        while(var6.hasNext()) {
-            Column column = (Column)var6.next();
+        while (var6.hasNext()) {
+            Column column = (Column) var6.next();
             int columnId1;
-            if((columnId1 = cursor.getColumnIndex(column.name)) != -1) {
+            if ((columnId1 = cursor.getColumnIndex(column.name)) != -1) {
                 column.setValue(result, cursor, columnId1);
             }
         }
 
-        return (T)result;
+        return (T) result;
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     public Object[] getValues(Object object) {
         Object[] result = new Object[this.columns.size()];
         int n = 0;
 
-        for(Iterator var5 = this.columns.iterator(); var5.hasNext(); ++n) {
-            Column column = (Column)var5.next();
+        for (Iterator var5 = this.columns.iterator(); var5.hasNext(); ++n) {
+            Column column = (Column) var5.next();
 
             try {
                 result[n] = object.getClass().getField(column.getName()).get(object);

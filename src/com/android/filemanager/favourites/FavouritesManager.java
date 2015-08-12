@@ -24,17 +24,14 @@ package com.android.filemanager.favourites;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import com.android.filemanager.sqlite.SQLiteHelper;
-import com.android.utils.FileUtils;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import com.android.filemanager.R;
 
 public class FavouritesManager {
     private final List<FavouriteFolder> mFolders;

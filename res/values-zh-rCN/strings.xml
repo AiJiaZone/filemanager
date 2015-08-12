@@ -53,7 +53,7 @@
     <string name="create">新建</string>
     <string name="folder_created_successfully">文件夹创建成功</string>
     <string name="loading_">正在加载...</string>
-    <string name="folder_could_not_be_created">无法创建文件夹</string>
+    <string name="folder_created_failed">无法创建文件夹</string>
     <string name="pasting_files_">正在粘贴文件...</string>
     <string name="downloads">下载</string>
     <string name="music">音乐</string>

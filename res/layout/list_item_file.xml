@@ -47,8 +47,7 @@
         android:maxLines="1"
         android:singleLine="true"
         android:text="@string/folder"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/tvFileDetails"

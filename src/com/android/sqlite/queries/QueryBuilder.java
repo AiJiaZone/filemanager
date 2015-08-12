@@ -11,7 +11,9 @@ public abstract class QueryBuilder {
     protected Table table;
     protected String condition = "1";
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     public QueryBuilder(Class<?> type) {
         this.table = new Table(type);

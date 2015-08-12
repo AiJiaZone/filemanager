@@ -80,13 +80,13 @@
         android:orderInCategory="4"
         android:showAsAction="ifRoom"
         android:title="@string/list_view"
-        android:visible="true"/>
+        android:visible="true" />
     <item
         android:id="@+id/menu_gridview"
         android:icon="@drawable/ic_about"
         android:orderInCategory="4"
         android:showAsAction="ifRoom"
         android:title="@string/grid_view"
-        android:visible="true"/>
+        android:visible="true" />
 
 </menu>

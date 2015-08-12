@@ -52,14 +52,11 @@ public class AppPreferences {
             PREF_SORT_BY = "sort_by",
             PREF_SHOW_TYPE = "show_type";
     private final static int DEFAULT_SORT_BY = SORT_BY_NAME;
-
+    private static Context mContext = null;
     File mStartFolder = null;
     int mSortBy = SORT_BY_NAME;
     int mCardLayout = CARD_LAYOUT_MEDIA;
-
     int mShowType = TYPE_GRID;
-
-    private static Context mContext = null;
 
     private AppPreferences() {
     }
@@ -135,12 +132,13 @@ public class AppPreferences {
         return this;
     }
 
+    public int getShowType() {
+        return mShowType;
+    }
+
     public void setShowType(int showType) {
         mShowType = showType;
         saveChangesAsync(mContext);
-    }
-    public int getShowType(){
-        return mShowType;
     }
 
     public File getStartFolder() {

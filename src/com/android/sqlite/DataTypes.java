@@ -34,7 +34,7 @@ public class DataTypes {
     }
 
     public static String getDataType(int fieldType) {
-        switch(fieldType) {
+        switch (fieldType) {
             case 101:
                 return "TEXT";
             case 201:
@@ -54,6 +54,6 @@ public class DataTypes {
     }
 
     public static int getFieldType(Class<?> cls) {
-        return cls.isAssignableFrom(String.class)?101:(!Integer.class.isAssignableFrom(cls) && !Integer.TYPE.isAssignableFrom(cls)?(!Long.class.isAssignableFrom(cls) && !Long.TYPE.isAssignableFrom(cls)?(!Double.class.isAssignableFrom(cls) && !Double.TYPE.isAssignableFrom(cls)?(!Float.class.isAssignableFrom(cls) && !Float.TYPE.isAssignableFrom(cls)?(!cls.isAssignableFrom(Character.class) && !cls.isAssignableFrom(Character.TYPE)?(!cls.isAssignableFrom(Byte.class) && !cls.isAssignableFrom(Byte.TYPE)?(!cls.isAssignableFrom(Short.class) && !cls.isAssignableFrom(Short.TYPE)?(!cls.isAssignableFrom(Boolean.class) && !cls.isAssignableFrom(Boolean.TYPE)?103:206):203):204):205):306):307):202):201);
+        return cls.isAssignableFrom(String.class) ? 101 : (!Integer.class.isAssignableFrom(cls) && !Integer.TYPE.isAssignableFrom(cls) ? (!Long.class.isAssignableFrom(cls) && !Long.TYPE.isAssignableFrom(cls) ? (!Double.class.isAssignableFrom(cls) && !Double.TYPE.isAssignableFrom(cls) ? (!Float.class.isAssignableFrom(cls) && !Float.TYPE.isAssignableFrom(cls) ? (!cls.isAssignableFrom(Character.class) && !cls.isAssignableFrom(Character.TYPE) ? (!cls.isAssignableFrom(Byte.class) && !cls.isAssignableFrom(Byte.TYPE) ? (!cls.isAssignableFrom(Short.class) && !cls.isAssignableFrom(Short.TYPE) ? (!cls.isAssignableFrom(Boolean.class) && !cls.isAssignableFrom(Boolean.TYPE) ? 103 : 206) : 203) : 204) : 205) : 306) : 307) : 202) : 201);
     }
 }

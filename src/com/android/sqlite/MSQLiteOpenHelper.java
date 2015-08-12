@@ -11,12 +11,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import com.android.sqlite.models.Table;
 import com.android.sqlite.queries.CreateTable;
 import com.android.sqlite.queries.Drop;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -56,70 +58,21 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     private static void upgradeTable(SQLiteDatabase database, Table table) {
-        Cursor cursor = database.rawQuery("PRAGMA table_info(" + table.getName() + ");", (String[])null);
-        if(cursor.getCount() == 0) {
+        Cursor cursor = database.rawQuery("PRAGMA table_info(" + table.getName() + ");", (String[]) null);
+        if (cursor.getCount() == 0) {
             createTable(database, table, false);
             Log.i("DatabaseUpgrade", "table created: " + table.getName());
         } else {
             Table currentDatabaseTable = Table.fromCursor(table.getName(), cursor);
             Iterator var5 = Table.upgradeTable(currentDatabaseTable, table).iterator();
 
-            while(var5.hasNext()) {
-                String sql = (String)var5.next();
+            while (var5.hasNext()) {
+                String sql = (String) var5.next();
                 database.execSQL(sql);
                 Log.i("DatabaseUpgrade", "table altered. Query: " + sql);
             }
         }
 
-    }
-
-    public void upgradeDatabase() {
-        SQLiteDatabase database = this.getWritableDatabase();
-        this.upgradeDatabase(database);
-        database.close();
-    }
-
-    public void upgradeDatabase(SQLiteDatabase database) {
-        Iterator var3 = this.classes.iterator();
-
-        while(var3.hasNext()) {
-            Class c = (Class)var3.next();
-            upgradeTable(database, new Table(c));
-        }
-
-    }
-
-    public void trackClasses(Collection<Class<?>> classes) {
-        this.classes.addAll(classes);
-    }
-
-    public void trackClass(Class<?> trackedClass) {
-        this.classes.add(trackedClass);
-    }
-
-    public void trackClasses(Class<?>[] classes) {
-        Class[] var5 = classes;
-        int var4 = classes.length;
-
-        for(int var3 = 0; var3 < var4; ++var3) {
-            Class c = var5[var3];
-            this.trackClass(c);
-        }
-
-    }
-
-    public void onCreate(SQLiteDatabase db) {
-        Iterator var3 = this.classes.iterator();
-
-        while(var3.hasNext()) {
-            Class c = (Class)var3.next();
-            createTable(db, c, true);
-        }
-
-    }
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        this.upgradeDatabase(db);
     }
 
     public static void dropTable(SQLiteDatabase database, Class<?> type) {
@@ -141,7 +94,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
     private static int delete(SQLiteDatabase database, Table table, Object item) {
         String whereClause;
         String[] whereArgs;
-        if(table.getPrimaryKeys().isEmpty()) {
+        if (table.getPrimaryKeys().isEmpty()) {
             whereClause = table.getFullWhereClause();
             whereArgs = table.getFullWhereArgs(item);
         } else {
@@ -162,37 +115,23 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
         int n = 0;
 
         Object item;
-        for(Iterator var6 = items.iterator(); var6.hasNext(); n += delete(database, table, item)) {
-            item = (Object)var6.next();
+        for (Iterator var6 = items.iterator(); var6.hasNext(); n += delete(database, table, item)) {
+            item = (Object) var6.next();
         }
 
         return n;
     }
 
-    public <T> int delete(Class<T> type, Collection<T> items) {
-        SQLiteDatabase database = this.getWritableDatabase();
-        int result = delete(database, type, items);
-        database.close();
-        return result;
-    }
-
-    public int delete(Object item) {
-        SQLiteDatabase database = this.getWritableDatabase();
-        int result = delete(database, item);
-        database.close();
-        return result;
-    }
-
     public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String selection, String[] selectionArgs, String orderBy, String limit) {
-        return select(database, type, (String[])null, selection, selectionArgs, orderBy, limit);
+        return select(database, type, (String[]) null, selection, selectionArgs, orderBy, limit);
     }
 
     public static <T> List<T> select(SQLiteDatabase database, Class<T> type, String[] columns, String selection, String[] selectionArgs, String orderBy, String limit) {
         ArrayList result = new ArrayList();
         Table table = new Table(type);
-        Cursor cursor = database.query(table.getName(), columns, selection, selectionArgs, (String)null, (String)null, orderBy, limit);
+        Cursor cursor = database.query(table.getName(), columns, selection, selectionArgs, (String) null, (String) null, orderBy, limit);
 
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             result.add(table.getRow(cursor, type));
         }
 
@@ -202,23 +141,23 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
 
     public static <T> T selectFirst(SQLiteDatabase database, Class<T> type, String selection, String[] selectionArgs, String orderBy) {
         Table table = new Table(type);
-        Cursor cursor = database.query(table.getName(), (String[])null, selection, selectionArgs, (String)null, (String)null, orderBy, "1");
+        Cursor cursor = database.query(table.getName(), (String[]) null, selection, selectionArgs, (String) null, (String) null, orderBy, "1");
         Object result;
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             result = table.getRow(cursor, type);
         } else {
             result = null;
         }
 
         cursor.close();
-        return (T)result;
+        return (T) result;
     }
 
     public static <T> void selectForeach(SQLiteDatabase database, Class<T> type, MSQLiteOpenHelper.OnRowSelectedListener<T> onRowSelectedListener, String selection, String[] selectionArgs, String orderBy, String limit) {
         Table table = new Table(type);
-        Cursor cursor = database.query(table.getName(), (String[])null, selection, selectionArgs, (String)null, (String)null, orderBy, limit);
+        Cursor cursor = database.query(table.getName(), (String[]) null, selection, selectionArgs, (String) null, (String) null, orderBy, limit);
 
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             onRowSelectedListener.onRowSelected(cursor, table.getRow(cursor, type));
         }
 
@@ -229,7 +168,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
         Table table = new Table(typeOfItem);
         Iterator var5 = items.iterator();
 
-        while(var5.hasNext()) {
+        while (var5.hasNext()) {
             Object row = var5.next();
             insert(database, table, row);
         }
@@ -265,11 +204,105 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
         int affectedRows = 0;
 
         Object object;
-        for(Iterator var7 = objects.iterator(); var7.hasNext(); affectedRows += update(database, table, object, whereClause, table.getPrimaryWhereArgs(object))) {
-            object = (Object)var7.next();
+        for (Iterator var7 = objects.iterator(); var7.hasNext(); affectedRows += update(database, table, object, whereClause, table.getPrimaryWhereArgs(object))) {
+            object = (Object) var7.next();
         }
 
         return affectedRows;
+    }
+
+    public static long insert(SQLiteDatabase database, Object item) {
+        return insert(database, new Table(item.getClass()), item);
+    }
+
+    private static long insert(SQLiteDatabase database, Table table, Object item) {
+        long id = database.insert(table.getName(), (String) null, table.getContentValues(item));
+        table.setRowID(item, id);
+        return id;
+    }
+
+    private static long replace(SQLiteDatabase database, Table table, Object item) {
+        long id = database.replace(table.getName(), (String) null, table.getContentValues(item));
+        table.setRowID(item, id);
+        return id;
+    }
+
+    public static long replace(SQLiteDatabase database, Object item) {
+        return replace(database, new Table(item.getClass()), item);
+    }
+
+    public static <T> void replace(SQLiteDatabase database, Class<T> type, Collection<T> items) {
+        Table table = new Table(type);
+        Iterator var5 = items.iterator();
+
+        while (var5.hasNext()) {
+            Object item = (Object) var5.next();
+            replace(database, table, item);
+        }
+
+    }
+
+    public void upgradeDatabase() {
+        SQLiteDatabase database = this.getWritableDatabase();
+        this.upgradeDatabase(database);
+        database.close();
+    }
+
+    public void upgradeDatabase(SQLiteDatabase database) {
+        Iterator var3 = this.classes.iterator();
+
+        while (var3.hasNext()) {
+            Class c = (Class) var3.next();
+            upgradeTable(database, new Table(c));
+        }
+
+    }
+
+    public void trackClasses(Collection<Class<?>> classes) {
+        this.classes.addAll(classes);
+    }
+
+    public void trackClass(Class<?> trackedClass) {
+        this.classes.add(trackedClass);
+    }
+
+    public void trackClasses(Class<?>[] classes) {
+        Class[] var5 = classes;
+        int var4 = classes.length;
+
+        for (int var3 = 0; var3 < var4; ++var3) {
+            Class c = var5[var3];
+            this.trackClass(c);
+        }
+
+    }
+
+    public void onCreate(SQLiteDatabase db) {
+        Iterator var3 = this.classes.iterator();
+
+        while (var3.hasNext()) {
+            Class c = (Class) var3.next();
+            createTable(db, c, true);
+        }
+
+    }
+
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        this.upgradeDatabase(db);
+    }
+
+    public <T> int delete(Class<T> type, Collection<T> items) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        int result = delete(database, type, items);
+        database.close();
+        return result;
+    }
+
+    public int delete(Object item) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        int result = delete(database, item);
+        database.close();
+        return result;
     }
 
     public int update(Object object) {
@@ -294,17 +327,7 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     public <T> List<T> selectAll(Class<T> type) {
-        return this.select(type, (String)null, (String[])null, (String)null, (String)null);
-    }
-
-    public static long insert(SQLiteDatabase database, Object item) {
-        return insert(database, new Table(item.getClass()), item);
-    }
-
-    private static long insert(SQLiteDatabase database, Table table, Object item) {
-        long id = database.insert(table.getName(), (String)null, table.getContentValues(item));
-        table.setRowID(item, id);
-        return id;
+        return this.select(type, (String) null, (String[]) null, (String) null, (String) null);
     }
 
     public long insert(Object item) {
@@ -318,27 +341,6 @@ public abstract class MSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         insert(database, classOfItem, items);
         database.close();
-    }
-
-    private static long replace(SQLiteDatabase database, Table table, Object item) {
-        long id = database.replace(table.getName(), (String)null, table.getContentValues(item));
-        table.setRowID(item, id);
-        return id;
-    }
-
-    public static long replace(SQLiteDatabase database, Object item) {
-        return replace(database, new Table(item.getClass()), item);
-    }
-
-    public static <T> void replace(SQLiteDatabase database, Class<T> type, Collection<T> items) {
-        Table table = new Table(type);
-        Iterator var5 = items.iterator();
-
-        while(var5.hasNext()) {
-            Object item = (Object)var5.next();
-            replace(database, table, item);
-        }
-
     }
 
     public <T> void replace(Class<T> type, Collection<T> items) {

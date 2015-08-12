@@ -28,8 +28,8 @@ import android.os.Environment;
 
 import com.android.filemanager.R;
 import com.android.filemanager.favourites.FavouriteFolder;
-import com.android.utils.FileUtils;
 import com.android.sqlite.MSQLiteOpenHelper;
+import com.android.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,13 +56,13 @@ public class SQLiteHelper extends MSQLiteOpenHelper {
                     FileUtils.DISPLAY_NAME_SD_CARD, false));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).isDirectory())
                 favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        getString(R.string.downloads),true));
+                        getString(R.string.downloads), true));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).isDirectory())
                 favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                         getString(R.string.music), true));
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).isDirectory())
                 favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-                        getString(R.string.photos),true));
+                        getString(R.string.photos), true));
         }
         favouriteFolders.add(new FavouriteFolder(Environment.getExternalStoragePublicDirectory("/"),
                 getString(R.string.root), false));
