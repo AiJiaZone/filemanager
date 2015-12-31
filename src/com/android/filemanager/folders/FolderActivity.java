@@ -76,7 +76,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
         setupDrawers();
         Clipboard.getInstance().addListener(this);
 
-        fontApplicator = new FontApplicator(getApplicationContext(), "Ubuntu-LI.ttf").applyFont(getWindow().getDecorView());
+        fontApplicator = new FontApplicator(getApplicationContext(), "Roboto_Regular.ttf").applyFont(getWindow().getDecorView());
     }
 
     public FontApplicator getFontApplicator() {
