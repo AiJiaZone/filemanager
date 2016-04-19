@@ -30,11 +30,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +43,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.filemanager.FileManagerApplication;
 import com.android.filemanager.R;
@@ -53,6 +55,7 @@ import com.android.filemanager.clipboard.ClipboardFileAdapter;
 import com.android.filemanager.favourites.FavouritesManager;
 import com.android.filemanager.favourites.FavouritesManager.FavouritesListener;
 import com.android.filemanager.nav_drawer.NavDrawerAdapter;
+import com.android.utils.FileUtils;
 import com.android.utils.FontApplicator;
 import com.android.utils.ListViewUtils;
 
@@ -63,8 +66,8 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
     public static final String EXTRA_DIR = FolderFragment.EXTRA_DIR;
     private static final boolean DISABLE_HIDE_ACTIONBAR = true;
     private static final String LOG_TAG = "Main Activity";
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle actionBarDrawerToggle;
+    DrawerLayout mDrawerLayout;
+    ActionBarDrawerToggle mActionBarDrawerToggler;
     File lastFolder = null;
     private FontApplicator fontApplicator;
 
@@ -130,14 +133,15 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
     }
 
     private void setupDrawers() {
-        this.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.ic_drawer, R.string.open_drawer, R.string.close_drawer) {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mActionBarDrawerToggler = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.open_drawer, R.string.close_drawer) {
             boolean actionBarShown = false;
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 setActionbarVisible(true);
+                updateStorageSpace();
                 invalidateOptionsMenu();
             }
 
@@ -154,13 +158,14 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
                 if (slideOffset > 0 && actionBarShown == false) {
                     actionBarShown = true;
                     setActionbarVisible(true);
-                } else if (slideOffset <= 0) actionBarShown = false;
+                } else if (slideOffset <= 0) {
+                    actionBarShown = false;
+                }
             }
         };
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        drawerLayout.setFocusableInTouchMode(false);
-//		drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.END);
+        mDrawerLayout.setDrawerListener(mActionBarDrawerToggler);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setFocusableInTouchMode(false);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
@@ -171,10 +176,10 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            mDrawerLayout.closeDrawer(GravityCompat.END);
         } else {
             super.onBackPressed();
         }
@@ -210,7 +215,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        actionBarDrawerToggle.syncState();
+        mActionBarDrawerToggler.syncState();
 
         if (getFragmentManager().findFragmentById(R.id.fragment) == null) {
             FolderFragment folderFragment = new FolderFragment();
@@ -227,15 +232,18 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
         }
     }
 
+    /**
+     * Why is onConfigurationChanged not called?
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+        mActionBarDrawerToggler.onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (actionBarDrawerToggle.onOptionsItemSelected(item))
+        if (mActionBarDrawerToggler.onOptionsItemSelected(item))
             return true;
         switch (item.getItemId()) {
             case R.id.menu_about:
@@ -284,7 +292,7 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
             case R.id.listNavigation:
                 NavDrawerAdapter.NavDrawerItem item = (NavDrawerAdapter.NavDrawerItem) arg0.getItemAtPosition(arg2);
                 if (item.onClicked(this))
-                    drawerLayout.closeDrawers();
+                    mDrawerLayout.closeDrawers();
                 break;
 
             case R.id.listClipboard:
@@ -313,10 +321,10 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
 
         ListView clipboardListView = (ListView) findViewById(R.id.listClipboard);
 
-        if (clipboard.isEmpty() && drawerLayout != null)
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.END);
+        if (clipboard.isEmpty() && mDrawerLayout != null)
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
         else {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
             FileManagerApplication application = (FileManagerApplication) getApplication();
             if (clipboardListView != null) {
                 ClipboardFileAdapter clipboardFileAdapter = new ClipboardFileAdapter(this, clipboard, application.getFileIconResolver());
@@ -338,6 +346,36 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
             finish();
             return true;
         } else return super.onKeyLongPress(keyCode, event);
+    }
+
+    private void updateStorageSpace() {
+        // Internal storage
+        TextView internalStorageView = (TextView) findViewById(R.id.internal_storage_hint);
+        String intStorageSize = FileUtils.getStorgaeSizes(Environment.getDataDirectory());
+        internalStorageView.setText(intStorageSize);
+
+        ProgressBar intUsedRatioBar = (ProgressBar) findViewById(R.id.internal_storage_usage);
+        int intUsedRatio = FileUtils.getStorageUsedRate(Environment.getDataDirectory());
+        intUsedRatioBar.setProgress(intUsedRatio);
+
+        // External storage
+        if (FileUtils.isExternalMemoryAvailable()) {
+            TextView externalStorageView = (TextView) findViewById(R.id.external_storage_hint);
+            String extStorageSize = FileUtils.getStorgaeSizes(Environment.getExternalStorageDirectory());
+            externalStorageView.setText(extStorageSize);
+
+            ProgressBar extUsedRatioBar = (ProgressBar) findViewById(R.id.external_storage_usage);
+            int extUsedRatio = FileUtils.getStorageUsedRate(Environment.getExternalStorageDirectory());
+            extUsedRatioBar.setProgress(extUsedRatio);
+        }
+
+        TextView ramView = (TextView) findViewById(R.id.ram_usage_hint);
+        String ramSize = FileUtils.getRamMemorySize(this);
+        ramView.setText(ramSize);
+
+        ProgressBar ramUsage = (ProgressBar) findViewById(R.id.ram_usage);
+        int ramRate = FileUtils.getRamUsageRatio(this);
+        ramUsage.setProgress(ramRate);
     }
 
     public static class FolderNotOpenException extends Exception {

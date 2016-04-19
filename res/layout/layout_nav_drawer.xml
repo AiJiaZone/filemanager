@@ -29,9 +29,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:background="@color/accent_color_light"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <LinearLayout
             android:id="@+id/internal_field"
@@ -43,6 +43,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/internal_storage"
                     android:layout_width="wrap_content"
@@ -50,13 +51,13 @@
                     android:text="@string/internal_storage"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
+
                 <TextView
+                    android:id="@+id/internal_storage_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/internal_storage_hint"
-                    android:text="@string/storage_hint"
                     android:layout_alignParentRight="true"
-                    />
+                    android:text="@string/storage_hint" />
 
             </RelativeLayout>
 
@@ -68,6 +69,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
+                android:max="100"
                 android:progressDrawable="@drawable/bg_progress_bar" />
         </LinearLayout>
 
@@ -81,6 +83,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/external_storage"
                     android:layout_width="match_parent"
@@ -90,12 +93,11 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/external_storage_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/external_storage_hint"
-                    android:text="@string/storage_hint"
                     android:layout_alignParentRight="true"
-                    />
+                    android:text="@string/storage_hint" />
             </RelativeLayout>
 
             <ProgressBar
@@ -106,6 +108,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
+                android:max="100"
                 android:progressDrawable="@drawable/bg_progress_bar" />
         </LinearLayout>
 
@@ -129,12 +132,11 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/ram_usage_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/ram_hint"
-                    android:text="@string/storage_hint"
                     android:layout_alignParentRight="true"
-                    />
+                    android:text="@string/storage_hint" />
 
             </RelativeLayout>
 
@@ -147,6 +149,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
+                android:max="100"
                 android:progressDrawable="@drawable/bg_progress_bar" />
         </LinearLayout>
     </LinearLayout>

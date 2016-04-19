@@ -23,6 +23,8 @@
 package com.android.utils;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +36,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Environment;
+import android.os.StatFs;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
@@ -86,15 +89,70 @@ public class FileUtils {
         return formatFileSize(file.length());
     }
 
+    public static String getStorgaeSizes(File path) {
+        StatFs stat = new StatFs(path.getPath());
+        long availSize = stat.getAvailableBytes();
+
+        long totalSize = stat.getTotalBytes();
+        String usedSpace = FileUtils.formatFileSize(availSize);
+        String totalSpace = FileUtils.formatFileSize(totalSize);
+
+        return usedSpace + "/" + totalSpace;
+    }
+
+    public static int getStorageUsedRate(File path) {
+        StatFs stat = new StatFs(path.getPath());
+        long availSize = stat.getAvailableBytes();
+
+        long totalSize = stat.getTotalBytes();
+
+        return (int) ((totalSize - availSize) / (totalSize + 1) * 100);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static String getRamMemorySize(final Context context) {
+        ActivityManager actManager = (ActivityManager) context.getApplicationContext()
+                .getSystemService(context.getApplicationContext().ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        long totalMemory = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            totalMemory = memInfo.totalMem;
+        }
+        String totoalStr = FileUtils.formatFileSize(totalMemory);
+        long availableMegs = memInfo.availMem;
+
+        String availableStr = FileUtils.formatFileSize(availableMegs);
+        return availableStr + "/" + totoalStr;
+    }
+
+    public static int getRamUsageRatio(final Context context) {
+        ActivityManager actManager = (ActivityManager) context.getApplicationContext()
+                .getSystemService(context.getApplicationContext().ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        long totalMemory = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            totalMemory = memInfo.totalMem;
+        }
+        long availableMegs = memInfo.availMem;
+
+        return (int) ((totalMemory - availableMegs) / (totalMemory + 1));
+    }
+
+    public static boolean isExternalMemoryAvailable() {
+        return Environment.isExternalStorageRemovable();
+    }
+
     public static String formatFileSize(long size) {
         if (size < MAX_BYTE_SIZE)
             return String.format(Locale.ENGLISH, "%d bytes", size);
         else if (size < MAX_KILOBYTE_SIZE)
-            return String.format(Locale.ENGLISH, "%.2f kb", (float) size / KILOBYTE);
+            return String.format(Locale.ENGLISH, "%.2f KB", (float) size / KILOBYTE);
         else if (size < MAX_MEGABYTE_SIZE)
-            return String.format(Locale.ENGLISH, "%.2f mb", (float) size / MEGABYTE);
+            return String.format(Locale.ENGLISH, "%.2f MB", (float) size / MEGABYTE);
         else
-            return String.format(Locale.ENGLISH, "%.2f gb", (float) size / GIGABYTE);
+            return String.format(Locale.ENGLISH, "%.2f GB", (float) size / GIGABYTE);
     }
 
     public static String formatFileSize(Collection<File> files) {
@@ -455,10 +513,13 @@ public class FileUtils {
         @Override
         public int compare(File lhs, File rhs) {
             if (lhs.isDirectory() || rhs.isDirectory()) {
-                if (lhs.isDirectory() == rhs.isDirectory())
+                if (lhs.isDirectory() == rhs.isDirectory()) {
                     return lhs.getName().compareToIgnoreCase(rhs.getName());
-                else if (lhs.isDirectory()) return FIRST;
-                else return SECOND;
+                }else if (lhs.isDirectory()) {
+                    return FIRST;
+                }else {
+                    return SECOND;
+                }
             }
             return lhs.getName().compareToIgnoreCase(rhs.getName());
         }

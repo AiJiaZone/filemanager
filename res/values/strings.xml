@@ -83,6 +83,6 @@
     <string name="internal_storage">Internal storage</string>
     <string name="external_storage">External storage</string>
     <string name="ram_usage">Ram</string>
-    <string name="storage_hint">%1$s/%2$s</string>
+    <string name="storage_hint">0GB/0GB</string>
 
 </resources>
