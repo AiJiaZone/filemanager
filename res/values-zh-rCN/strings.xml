@@ -79,4 +79,7 @@
     <string name="mime_type_s">MIME 类型: %s</string>
     <string name="list_view">列表</string>
     <string name="grid_view">图标</string>
+    <string name="internal_storage">内部存储空间</string>
+    <string name="external_storage">外部存储空间</string>
+    <string name="ram_usage">内存</string>
 </resources>

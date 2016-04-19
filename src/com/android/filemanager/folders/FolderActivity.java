@@ -171,20 +171,22 @@ public class FolderActivity extends Activity implements OnItemClickListener, Cli
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        else if (drawerLayout.isDrawerOpen(GravityCompat.END))
+        } else if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
             drawerLayout.closeDrawer(GravityCompat.END);
-        else
+        } else {
             super.onBackPressed();
+        }
     }
 
     void setupNavDrawer() {
         FileManagerApplication application = (FileManagerApplication) getApplication();
+        View naviDrawer = findViewById(R.id.navi_drawer);
+        ListViewUtils.addListViewPadding(naviDrawer, this, true);
 
         // add listview header to push items below the actionbar
-        ListView navListView = (ListView) findViewById(R.id.listNavigation);
-        ListViewUtils.addListViewPadding(navListView, this, true);
+        //ListView navListView = (ListView) findViewById(R.id.listNavigation);
 
         loadFavourites(application.getFavouritesManager());
         application.getFavouritesManager().addFavouritesListener(this);

@@ -80,5 +80,9 @@
 
     <string name="list_view">List view</string>
     <string name="grid_view">Grid view</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="external_storage">External storage</string>
+    <string name="ram_usage">Ram</string>
+    <string name="storage_hint">%1$s/%2$s</string>
 
 </resources>

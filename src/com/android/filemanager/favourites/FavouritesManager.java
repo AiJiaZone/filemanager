@@ -72,8 +72,9 @@ public class FavouritesManager {
     }
 
     void notifyListeners() {
-        for (FavouritesListener listener : favouritesListeners)
+        for (FavouritesListener listener : favouritesListeners) {
             listener.onFavouritesChanged(this);
+        }
     }
 
     public List<FavouriteFolder> getFolders() {
@@ -88,11 +89,12 @@ public class FavouritesManager {
     }
 
     public void removeFavourite(File file) {
-        for (FavouriteFolder folder : mFolders)
+        for (FavouriteFolder folder : mFolders) {
             if (folder.equals(file) && folder.isRemovable()) {
                 removeFavourite(folder);
                 break;
             }
+        }
     }
 
     public void removeFavourite(FavouriteFolder favouriteFolder) {
@@ -125,7 +127,6 @@ public class FavouritesManager {
         public FolderAlreadyFavouriteException(FavouriteFolder folder) {
             super(folder.toString() + " is already bookmarked");
         }
-
     }
 
 }
