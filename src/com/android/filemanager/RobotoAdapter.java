@@ -32,7 +32,7 @@ import java.util.List;
 
 public class RobotoAdapter<T> extends ArrayAdapter<T> {
     private FontApplicator fontApplicator;
-    private String fontName = "Roboto_Regular.ttf";
+    private String fontName = "Roboto_Light.ttf";
 
     public RobotoAdapter(Context context, int resource, int textViewResourceId,
                          List<T> objects) {
